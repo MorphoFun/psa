@@ -1,9 +1,4 @@
-################ Datasets for tremors ################
-
-# Establishing the location of the folder that stores the data file I'll be looking at and
-# manipulating
-#setwd('~/Dropbox/PhenoSel/tremors')
-
+################ Phenotypic selection datasets ################
 
 #' @title Read raw data files that are uploaded on GitHub
 #'
@@ -25,7 +20,7 @@
 #'
 #' @examples
 #' # Load the Bumpus.csv data file from GitHub
-#' FlowersData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Baranzelli_etal_Flowers.csv", sep = ",")
+#' FlowersData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Baranzelli_etal_Flowers.csv", sep = ",")
 #'
 #' # Review the first 6 rows
 #' head(FlowersData)
@@ -60,8 +55,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
 #'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
-#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, and then modified for use in tremors.
-#' @format data.frame with 136 observations and 13 variables
+#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @references Bumpus, H.C. 1899. The elimination of the unfit as illustrated by the introduced sparrow, \emph{Passer domesticus}. \emph{Biol. Lectures, Woods Hole Marine Biol. Station}: 209-226.
 #' @usage Bumpus
 #' @seealso \code{\link{BumpusFemales}, \link{BumpusMales}}
@@ -77,7 +71,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #' lm(w ~ ., data=Bumpus[,c(1,3:11)])
 #'
 
-BumpusData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Bumpus_Sparrows.csv", sep = ",")
+BumpusData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Bumpus_Sparrows.csv", sep = ",")
 
 # Converting measurements, so they're in the same units (mm)
 # HumerusL, FemurL, TibioTarL,SkullW,SternumKeelL are all in inches (these are the last
@@ -97,8 +91,8 @@ Bumpus.Edit$Age.Group <- factor(Bumpus.Edit$Age.Group)
 Bumpus <- cbind(w = (Bumpus.Edit[,2]/mean(Bumpus.Edit[,2])), Bumpus.Edit[,c(2, 4:12,1,3)])
 
 ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(Bumpus, file="Bumpus.rda")
+ setwd('~/Dropbox/psa/data')
+ save(Bumpus, file="Bumpus.rda")
 
 
 ####### BUMPUS FEMALES ########
@@ -123,7 +117,7 @@ Bumpus <- cbind(w = (Bumpus.Edit[,2]/mean(Bumpus.Edit[,2])), Bumpus.Edit[,c(2, 4
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
 #'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
-#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, and then modified for use in tremors.
+#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @format data.frame with 49 observations and 13 variables
 #' @references Bumpus, H.C. 1899. The elimination of the unfit as illustrated by the introduced sparrow, \emph{Passer domesticus}. \emph{Biol. Lectures, Woods Hole Marine Biol. Station}: 209-226.
 #' @usage BumpusFemales
@@ -146,8 +140,8 @@ BumpusF <- subset(Bumpus.Edit, Sex=="0")
 BumpusFemales <- cbind(w = (BumpusF[,2]/mean(BumpusF[,2])), BumpusF[,c(2, 4:12,1,3)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(BumpusFemales, file="BumpusFemales.rda")
+setwd('~/Dropbox/psa/data')
+save(BumpusFemales, file="BumpusFemales.rda")
 
 
 ####### BUMPUS MALES ########
@@ -172,7 +166,7 @@ BumpusFemales <- cbind(w = (BumpusF[,2]/mean(BumpusF[,2])), BumpusF[,c(2, 4:12,1
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
 #'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
-#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, and then modified for use in tremors.
+#' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @format data.frame with 87 observations and 13 variables
 #' @references Bumpus, H.C. 1899. The elimination of the unfit as illustrated by the introduced sparrow, \emph{Passer domesticus}. \emph{Biol. Lectures, Woods Hole Marine Biol. Station}: 209-226.
 #' @usage BumpusMales
@@ -194,21 +188,19 @@ BumpusM <- subset(Bumpus.Edit, Sex=="1")
 BumpusMales <- cbind(w = (BumpusM[,2]/mean(BumpusM[,2])), BumpusM[,c(2, 4:12,1,3)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(BumpusMales, file="BumpusMales.rda")
+setwd('~/Dropbox/psa/data')
+save(BumpusMales, file="BumpusMales.rda")
 
 
 ####### CameroonCichlids ########
 # This is the "fitness dataset" from the "complete dataset.xls" file available from Martin (2012) on Dryad
-CichlidData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Martin_CameroonCichlids.csv", sep = ",")
+CichlidData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Martin_CameroonCichlids.csv", sep = ",")
 
-
-# Now to format the data to be usable with the tremors package
 
 #' @title Cameroon crater lake cichlids from the Barombi Mbo lake
 #'
 #' @name CichlidBarombi
-#' @description Raw data from the Martin (2012) study on morphological selection in Cameroon crater lake cichlids.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{CichlidBarombi} is a subset of the Martin (2012) data that includes the fish from the Barombi Mbo lake, and contains the following variables:
+#' @description Raw data from the Martin (2012) study on morphological selection in Cameroon crater lake cichlids.  These data were downloaded from Dryad and then formatted for use in this R package. \code{CichlidBarombi} is a subset of the Martin (2012) data that includes the fish from the Barombi Mbo lake, and contains the following variables:
 #'
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Barombi.}
@@ -244,14 +236,14 @@ CichlidB <- subset(CichlidData, lake=="Barombi Mbo")
 CichlidBarombi <- cbind(w = CichlidB[,5]/mean(CichlidB[,5]), CichlidB[,c(6:10, 4, 1:3,11)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(CichlidBarombi, file="CichlidBarombi.rda")
+setwd('~/Dropbox/psa/data')
+save(CichlidBarombi, file="CichlidBarombi.rda")
 
 
 #' @title Cameroon crater lake cichlids from the Ejagham lake
 #'
 #' @name CichlidEjagham
-#' @description Raw data from the Martin (2012) study on morphological selection in Cameroon crater lake cichlids.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{CichlidEjagham} is a subset of the Martin (2012) data that includes the fish from the Ejagham lake, and contains the following variables:
+#' @description Raw data from the Martin (2012) study on morphological selection in Cameroon crater lake cichlids.  These data were downloaded from Dryad and then formatted for use in this R package. \code{CichlidEjagham} is a subset of the Martin (2012) data that includes the fish from the Ejagham lake, and contains the following variables:
 #'
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Ejagham.}
@@ -287,19 +279,19 @@ CichlidE <- subset(CichlidData, lake=="Ejagham")
 CichlidEjagham <- cbind(w = CichlidE[,5]/mean(CichlidE[,5]), CichlidE[,c(6:10, 4, 1:3,11)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(CichlidEjagham, file="CichlidEjagham.rda")
+setwd('~/Dropbox/psa/data')
+save(CichlidEjagham, file="CichlidEjagham.rda")
 
 
 ###### LarvalSquirts #######
 
 # Read in the raw data
-SquirtData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Crean_etal_LarvalSquirts.csv", sep = ",")
+SquirtData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Crean_etal_LarvalSquirts.csv", sep = ",")
 
 #' @title Larvae of sea squirts (\emph{Styela plicata})
 #'
 #' @name LarvalSquirts
-#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{LarvalSquirts} includes the data for both the high density and low density treatments, and contains the following variables:
+#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted for use in this R package. \code{LarvalSquirts} includes the data for both the high density and low density treatments, and contains the following variables:
 #'
 #'\describe{
 #'	\item{\code{wr}}{relative fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for all larvae.}
@@ -333,14 +325,14 @@ LarvalSquirts <- cbind(wr = SquirtData[,7]/mean(SquirtData[,7], na.rm=T), ws = S
 	Wr = SquirtData[,7], Ws = SquirtData[,8], SquirtData[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(LarvalSquirts, file="LarvalSquirts.rda")
+setwd('~/Dropbox/psa/data')
+save(LarvalSquirts, file="LarvalSquirts.rda")
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in high density
 #'
 #' @name LarvalSquirtsHD
-#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{LarvalSquirtsHD} includes the data from the high density treatment, and consists of the following variables:
+#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted for use in this R package. \code{LarvalSquirtsHD} includes the data from the high density treatment, and consists of the following variables:
 #'
 #'\describe{
 #'	\item{\code{wr}}{relative fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for larvae in the high density treatment.}
@@ -377,14 +369,14 @@ LarvalSquirtsHD <- cbind(wr = SquirtsHD[,7]/mean(SquirtsHD[,7], na.rm=T), ws = S
 	Wr = SquirtsHD[,7], Ws = SquirtsHD[,8], SquirtsHD[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(LarvalSquirtsHD, file="LarvalSquirtsHD.rda")
+setwd('~/Dropbox/psa/data')
+save(LarvalSquirtsHD, file="LarvalSquirtsHD.rda")
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in low density
 #'
 #' @name LarvalSquirtsLD
-#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{LarvalSquirtsLD} includes the data from the high density treatment, and consists of the following variables:
+#' @description Raw data from the Crean et al. (2011) study on phenotypic selection across the metamorphic boundary in \emph{Styela plicata} larvae.  These data were downloaded from Dryad and then formatted for use in this R package. \code{LarvalSquirtsLD} includes the data from the high density treatment, and consists of the following variables:
 #'
 #'\describe{
 #'	\item{\code{wr}}{relative fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for larvae in the low density treatment.}
@@ -421,19 +413,19 @@ LarvalSquirtsLD <- cbind(wr = SquirtsLD[,7]/mean(SquirtsLD[,7], na.rm=T), ws = S
 	Wr = SquirtsLD[,7], Ws = SquirtsLD[,8], SquirtsLD[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(LarvalSquirtsLD, file="LarvalSquirtsLD.rda")
+setwd('~/Dropbox/psa/data')
+save(LarvalSquirtsLD, file="LarvalSquirtsLD.rda")
 
 
 ###### Galls #######
 
 # Read in the raw data
-GallData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Egan_etal_Galls.csv", sep = ",")
+GallData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Egan_etal_Galls.csv", sep = ",")
 
 #' @title Gall size
 #'
 #' @name Galls
-#' @description Raw data from the Egan et al. (2011) study on phenotypic selection on gall size produced by \emph{Belonocnema treatae} on a host tree (\emph{Quercus fusiformis}).  These data were downloaded from Dryad and then formatted to be used in tremors. \code{Galls} consists of the following variables:
+#' @description Raw data from the Egan et al. (2011) study on phenotypic selection on gall size produced by \emph{Belonocnema treatae} on a host tree (\emph{Quercus fusiformis}).  These data were downloaded from Dryad and then formatted for use in this R package. \code{Galls} consists of the following variables:
 #'
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on the emergence/survivorship of the host-specific gall-former \emph{Belonocnema treatae} (\code{BtreataeEmergence}) on it host plant (the plateau live oak \emph{Quercus fusiformis}).}
@@ -461,19 +453,19 @@ GallData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/mast
 Galls <- cbind(w = GallData[,5]/mean(GallData[,5], na.rm=T), W = GallData[,5], GallData[,c(4, 1:3)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(Galls, file="Galls.rda")
+setwd('~/Dropbox/psa/data')
+save(Galls, file="Galls.rda")
 
 
 ###### FlyCHC #######
 
 # Read in the raw data
-CHCData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Gosden_etal_FlyCHC.csv", sep = ",")
+CHCData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Gosden_etal_FlyCHC.csv", sep = ",")
 
 #' @title Phenotypic selection on \emph{Drosophila serrata} CHC traits
 #'
 #' @name FlyCHC
-#' @description Raw data from the Gosden et al. (2014) study on phenotypic selection on CHC traits in \emph{Drosophila serrata}.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{FlyCHC} consists of the following variables:
+#' @description Raw data from the Gosden et al. (2014) study on phenotypic selection on CHC traits in \emph{Drosophila serrata}.  These data were downloaded from Dryad and then formatted for use in this R package. \code{FlyCHC} consists of the following variables:
 #'
 #' \describe{
 #' 		\item{\code{w}}{relative fitness, based on mating success.}
@@ -505,18 +497,18 @@ CHCData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/maste
 FlyCHC <- cbind(w = CHCData[,1]/mean(CHCData[,1], na.rm=T), W = CHCData[,1], CHCData[,c(3:9,2)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(FlyCHC, file="FlyCHC.rda")
+setwd('~/Dropbox/psa/data')
+save(FlyCHC, file="FlyCHC.rda")
 
 
 ####### Flowers ########
 
-FlowersData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Baranzelli_etal_Flowers.csv", sep = ",")
+FlowersData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Baranzelli_etal_Flowers.csv", sep = ",")
 
 #' @title Flower morphology Morrenia brachtephana
 #'
 #' @name Flowers
-#' @description Raw data from the Baranzelli et al. (2014) study on morphological selection in the flowers of \emph{Morrenia brachtephana}.  These data were downloaded from Dryad and then formatted to be used in tremors. \code{Flowers} consists of the following variables:
+#' @description Raw data from the Baranzelli et al. (2014) study on morphological selection in the flowers of \emph{Morrenia brachtephana}.  These data were downloaded from Dryad and then formatted for use in this R package. \code{Flowers} consists of the following variables:
 #'
 #' \describe{
 #' 		\item{\code{wm}}{relative male fitness, based on the average number of pollinaria exported per flower from all the flowers sampled for each individual (\code{Pollinarium.export}).}
@@ -551,18 +543,18 @@ Flowers <- cbind(wm = FlowersData[,9]/mean(FlowersData[,9], na.rm=T), wf = Flowe
 	Wm = FlowersData[,9], Wf = FlowersData[,10], FlowersData[,c(2:8,1)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(Flowers, file="Flowers.rda")
+setwd('~/Dropbox/psa/data')
+save(Flowers, file="Flowers.rda")
 
 
 ####### DesertPlants ########
 
-DesertData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Kimball_etal_DesertPlants.csv", sep = ",")
+DesertData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Kimball_etal_DesertPlants.csv", sep = ",")
 
 #' @title Phenotypic selection in winter annual plants from the Sonoran Desert
 #'
 #' @name DesertPlants
-#' @description Standardized data from the Kimball et al. (2013) study on phenotypic selection in four winter annual plant species from the Sonoran Desert that identified a trade-off between relative growth rate and water use efficiency. Traits were standardized by "substracting the mean and dividing by the standard deviation". These data were downloaded from Dryad and then formatted to be used in tremors. \code{DesertPlants} consists of the following variables:
+#' @description Standardized data from the Kimball et al. (2013) study on phenotypic selection in four winter annual plant species from the Sonoran Desert that identified a trade-off between relative growth rate and water use efficiency. Traits were standardized by "substracting the mean and dividing by the standard deviation". These data were downloaded from Dryad and then formatted for use in this R package. \code{DesertPlants} consists of the following variables:
 #'
 #' \describe{
 #' 		\item{\code{w}}{relative fitness, based on total plant biomass (\code{RelFitness}), which was used as a proxy for seed production.}
@@ -593,22 +585,20 @@ DesertData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/ma
 DesertPlants <- cbind(w = DesertData[,4], DesertData[,c(5:9, 1:3)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(DesertPlants, file="DesertPlants.rda")
+setwd('~/Dropbox/psa/data')
+save(DesertPlants, file="DesertPlants.rda")
 
 
 
 ####### Bullfrogs ########
 # Data were transcribed from the Howard (1979) paper
-BullfrogData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Howard_Bullfrogs.csv", sep = ",")
+BullfrogData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Howard_Bullfrogs.csv", sep = ",")
 
-
-# Now to format the data to be usable with the tremors package
 
 #' @title Reproductive success of male bullfrogs
 #'
 #' @name Bullfrogs
-#' @description Raw data from the Howard (1979) study on sexual selection on body size in male \emph{Rana catesbeiana} bullfrogs during 1976.  These data were transcribed from Table 1 in Howard (1979) and then formatted to be used in tremors. \code{Bullfrogs} contains the following variables:
+#' @description Raw data from the Howard (1979) study on sexual selection on body size in male \emph{Rana catesbeiana} bullfrogs during 1976.  These data were transcribed from Table 1 in Howard (1979) and then formatted for use in this R package. \code{Bullfrogs} contains the following variables:
 #'
 #'\describe{
 #'	\item{\code{BodySize.mm}}{Body size of the individual, based on snout-ischium length in millimeters}
@@ -645,8 +635,8 @@ Bullfrogs <- cbind(
 	)
 
 # ## Saving the data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
-# save(Bullfrogs, file="Bullfrogs.rda")
+setwd('~/Dropbox/psa/data')
+save(Bullfrogs, file="Bullfrogs.rda")
 
 
 
@@ -662,7 +652,7 @@ Bullfrogs <- cbind(
 # #' @title Ejaculate of Mytilus galloprovincialis
 # #'
 # #' @name Ejaculate
-# #' @description Raw data from the Fitzpatrick et al. (2012) study on morphological selection in the ejaculate of Mytilus galloprovincialis.  These data were downloaded from Dryad and then formatted to be used in tremors.
+# #' @description Raw data from the Fitzpatrick et al. (2012) study on morphological selection in the ejaculate of Mytilus galloprovincialis.  These data were downloaded from Dryad and then formatted for use in this R package.
 # #'
 # #' @param z A data.frame of standardized traits for all individuals before the selection event
 # #' @param W Absolute fitness
@@ -684,12 +674,12 @@ Bullfrogs <- cbind(
 #
 # # Downloaded from Cox and Calsbeek (2014) on Dryad
 # # http://datadryad.org/resource/doi:10.5061/dryad.bt7t0
-# AnolisFData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Cox_Calsbeek_AnolisFemale.csv", "csv")
+# AnolisFData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Cox_Calsbeek_AnolisFemale.csv", "csv")
 #
 # #' @title Female Anolis sagrei lizards
 # #'
 # #' @name AnolisFemale
-# #' @description Raw data from the Cox and Calsbeek (2014) study on morphological selection on body size in Anolis lizards.  These data were downloaded from Dryad and then formatted to be used in tremors. This particular subset includes the data for the female Anolis lizards. Calculation of relative fitness, and standardization of traits to mean and unit variance were done separately within each sex, year, and island prior to pooling.
+# #' @description Raw data from the Cox and Calsbeek (2014) study on morphological selection on body size in Anolis lizards.  These data were downloaded from Dryad and then formatted for use in this R package. This particular subset includes the data for the female Anolis lizards. Calculation of relative fitness, and standardization of traits to mean and unit variance were done separately within each sex, year, and island prior to pooling.
 # #'
 # #' @param w = relative fitness, based on survival of only female individuals (Relative.W)
 # #' @param W = absolute fitness, based on survival of only female individuals (Survival). 1 = survived, 0 = died.
@@ -703,11 +693,11 @@ Bullfrogs <- cbind(
 # AnnolisFemales <- cbind(w = AnolisFData[,17], W = AnolisFData[,4], AnolisFData[,c(13:14)])
 #
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
+# setwd('~/Dropbox/psa/data')
 # save(Flowers, file="Flowers.rda")
 #
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
+# setwd('~/Dropbox/psa/data')
 # save(AnolisFemale, file="AnolisFemale.rda")
 #
 #
@@ -716,7 +706,7 @@ Bullfrogs <- cbind(
 #
 # # Downloaded from Cox and Calsbeek (2014) on Dryad
 # # http://datadryad.org/resource/doi:10.5061/dryad.bt7t0
-# AnolisMData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Cox_Calsbeek_AnolisMale.csv", "csv")
+# AnolisMData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Cox_Calsbeek_AnolisMale.csv", "csv")
 #
 #
 #
@@ -730,17 +720,17 @@ Bullfrogs <- cbind(
 # # binomial error distribution. We then used this residual as a fitness measure in our selection analysis, thus
 # # ensuring that selectiong radietns are slced relative to the variation in fitness within each sex ratio [treatment]"
 #
-# #AnolisMData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Cox_Calsbeek_AnolisMale.csv", #"csv")
+# #AnolisMData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Cox_Calsbeek_AnolisMale.csv", #"csv")
 #
 #
 # ####### Seaweed ########
 #
-# SeaweedData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/tremors/master/dataraw/Kimball_etal_DesertPlants.csv", "csv")
+# SeaweedData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/dataraw/Kimball_etal_DesertPlants.csv", "csv")
 #
 # #' @title Morphological selection in clonal seaweeds
 # #'
 # #' @name Seaweed
-# #' @description Standardized data from the Kimball et al. (2013) study on phenotypic selection in four winter annual plant species from the Sonoran Desert that identified a trade-off between relative growth rate and water use efficiency. Traits were standardized by "substracting the mean and dividing by the standard deviation". These data were downloaded from Dryad and then formatted to be used in tremors.
+# #' @description Standardized data from the Kimball et al. (2013) study on phenotypic selection in four winter annual plant species from the Sonoran Desert that identified a trade-off between relative growth rate and water use efficiency. Traits were standardized by "substracting the mean and dividing by the standard deviation". These data were downloaded from Dryad and then formatted for use in this R package.
 # #'
 # #' @param w = relative fitness, based on "total body size multipled by the mean density of zooids carrying brood chabers in three 1 cm squre section sof body stissue sampled along its radius" as an estimate of fecundity. These values were then corrected for zooid size using regression residuals, as described in Appendix A of Monro and Marshall (2014)
 #
@@ -752,7 +742,7 @@ Bullfrogs <- cbind(
 # DesertPlants <- cbind(w = DesertData[,4], DesertData[,c(5:9, 1:3)])
 #
 # ## Saving the Bumpus.Edit data as an RDA file
-# setwd('~/Dropbox/PhenoSel/tremors/data')
+# setwd('~/Dropbox/psa/data')
 # save(DesertPlants, file="DesertPlants.rda")
 
 
