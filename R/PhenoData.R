@@ -91,8 +91,8 @@ Bumpus.Edit$Age.Group <- factor(Bumpus.Edit$Age.Group)
 Bumpus <- cbind(w = (Bumpus.Edit[,2]/mean(Bumpus.Edit[,2])), Bumpus.Edit[,c(2, 4:12,1,3)])
 
 ## Saving the data as an RDA file
- setwd('~/Dropbox/psa/data')
- save(Bumpus, file="Bumpus.rda")
+ # setwd('~/Dropbox/psa/data')
+ # save(Bumpus, file="Bumpus.rda")
 
 
 ####### BUMPUS FEMALES ########
@@ -140,8 +140,8 @@ BumpusF <- subset(Bumpus.Edit, Sex=="0")
 BumpusFemales <- cbind(w = (BumpusF[,2]/mean(BumpusF[,2])), BumpusF[,c(2, 4:12,1,3)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(BumpusFemales, file="BumpusFemales.rda")
+# setwd('~/Dropbox/psa/data')
+# save(BumpusFemales, file="BumpusFemales.rda")
 
 
 ####### BUMPUS MALES ########
@@ -188,8 +188,8 @@ BumpusM <- subset(Bumpus.Edit, Sex=="1")
 BumpusMales <- cbind(w = (BumpusM[,2]/mean(BumpusM[,2])), BumpusM[,c(2, 4:12,1,3)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(BumpusMales, file="BumpusMales.rda")
+# setwd('~/Dropbox/psa/data')
+# save(BumpusMales, file="BumpusMales.rda")
 
 
 ####### CameroonCichlids ########
@@ -236,8 +236,8 @@ CichlidB <- subset(CichlidData, lake=="Barombi Mbo")
 CichlidBarombi <- cbind(w = CichlidB[,5]/mean(CichlidB[,5]), CichlidB[,c(6:10, 4, 1:3,11)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(CichlidBarombi, file="CichlidBarombi.rda")
+# setwd('~/Dropbox/psa/data')
+# save(CichlidBarombi, file="CichlidBarombi.rda")
 
 
 #' @title Cameroon crater lake cichlids from the Ejagham lake
@@ -279,8 +279,8 @@ CichlidE <- subset(CichlidData, lake=="Ejagham")
 CichlidEjagham <- cbind(w = CichlidE[,5]/mean(CichlidE[,5]), CichlidE[,c(6:10, 4, 1:3,11)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(CichlidEjagham, file="CichlidEjagham.rda")
+# setwd('~/Dropbox/psa/data')
+# save(CichlidEjagham, file="CichlidEjagham.rda")
 
 
 ###### LarvalSquirts #######
@@ -325,8 +325,8 @@ LarvalSquirts <- cbind(wr = SquirtData[,7]/mean(SquirtData[,7], na.rm=T), ws = S
 	Wr = SquirtData[,7], Ws = SquirtData[,8], SquirtData[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(LarvalSquirts, file="LarvalSquirts.rda")
+# setwd('~/Dropbox/psa/data')
+# save(LarvalSquirts, file="LarvalSquirts.rda")
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in high density
@@ -369,8 +369,8 @@ LarvalSquirtsHD <- cbind(wr = SquirtsHD[,7]/mean(SquirtsHD[,7], na.rm=T), ws = S
 	Wr = SquirtsHD[,7], Ws = SquirtsHD[,8], SquirtsHD[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(LarvalSquirtsHD, file="LarvalSquirtsHD.rda")
+# setwd('~/Dropbox/psa/data')
+# save(LarvalSquirtsHD, file="LarvalSquirtsHD.rda")
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in low density
@@ -413,8 +413,8 @@ LarvalSquirtsLD <- cbind(wr = SquirtsLD[,7]/mean(SquirtsLD[,7], na.rm=T), ws = S
 	Wr = SquirtsLD[,7], Ws = SquirtsLD[,8], SquirtsLD[,c(4:6, 1:3)])
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(LarvalSquirtsLD, file="LarvalSquirtsLD.rda")
+# setwd('~/Dropbox/psa/data')
+# save(LarvalSquirtsLD, file="LarvalSquirtsLD.rda")
 
 
 ###### Galls #######
@@ -453,8 +453,8 @@ GallData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/d
 Galls <- cbind(w = GallData[,5]/mean(GallData[,5], na.rm=T), W = GallData[,5], GallData[,c(4, 1:3)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(Galls, file="Galls.rda")
+# setwd('~/Dropbox/psa/data')
+# save(Galls, file="Galls.rda")
 
 
 ###### FlyCHC #######
@@ -497,8 +497,8 @@ CHCData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master/da
 FlyCHC <- cbind(w = CHCData[,1]/mean(CHCData[,1], na.rm=T), W = CHCData[,1], CHCData[,c(3:9,2)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(FlyCHC, file="FlyCHC.rda")
+# setwd('~/Dropbox/psa/data')
+# save(FlyCHC, file="FlyCHC.rda")
 
 
 ####### Flowers ########
@@ -543,8 +543,8 @@ Flowers <- cbind(wm = FlowersData[,9]/mean(FlowersData[,9], na.rm=T), wf = Flowe
 	Wm = FlowersData[,9], Wf = FlowersData[,10], FlowersData[,c(2:8,1)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(Flowers, file="Flowers.rda")
+# setwd('~/Dropbox/psa/data')
+# save(Flowers, file="Flowers.rda")
 
 
 ####### DesertPlants ########
@@ -585,8 +585,8 @@ DesertData <- readGitHub("https://raw.githubusercontent.com/MorphoFun/psa/master
 DesertPlants <- cbind(w = DesertData[,4], DesertData[,c(5:9, 1:3)])
 
 # ## Saving the Bumpus.Edit data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(DesertPlants, file="DesertPlants.rda")
+# setwd('~/Dropbox/psa/data')
+# save(DesertPlants, file="DesertPlants.rda")
 
 
 
@@ -635,8 +635,8 @@ Bullfrogs <- cbind(
 	)
 
 # ## Saving the data as an RDA file
-setwd('~/Dropbox/psa/data')
-save(Bullfrogs, file="Bullfrogs.rda")
+# setwd('~/Dropbox/psa/data')
+# save(Bullfrogs, file="Bullfrogs.rda")
 
 
 
