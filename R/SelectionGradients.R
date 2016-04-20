@@ -34,7 +34,7 @@
 #' @param \code{st} Option to standardize the regression coefficients by either the mean or the standard deviation of \code{z}.
 #' @param \code{RE} Random effects of the model, if applicable.
 #'
-#' @details The Lande-Arnold Method is based on the
+#' @details The Lande-Arnold Method is based on the 1983 paper by Russell Lande and Stevan Arnold, entitled "The measurement of selection on correlated characters". Their method involves applying ordinary least-squares (OLS) regression to estimate selection gradients. 
 #'
 #' @return The function returns an object of classes "\code{glam}", "\code{lm}", and "\code{glm}."
 #'
