@@ -19,14 +19,15 @@ simz <- function(n, means, sds) {
 	}
 	xx <- do.call("cbind", x)
 	xx <- data.frame(xx, stringsAsFactors=F)
+	return(xx)
 }
 
 # Need to figure out how to apply this to a binomial case... or whether this is the proper way to
 # address the issue overall.
 
-MLM <- function(x, intercept=1, b, R2, ydistn = c("normal", "binomial"), prob = NULL) {
+MLM <- function(x, b, ydistn = c("normal", "binomial"), intercept=1, R2 = NULL, prob = NULL) {
 	bx <- list()
-	#yhat <- list()
+
 	for (i in 1:length(b)) {
 		bx[[i]] <- (b[i]*x[,i])
 		yhat <- intercept + rowSums(do.call("cbind", bx))
@@ -40,20 +41,22 @@ MLM <- function(x, intercept=1, b, R2, ydistn = c("normal", "binomial"), prob = 
 	if (ydistn=="normal") {
 		e <- rnorm(nrow(x))
 		e <- resid( glm( e ~ ., data=x, family = gaussian) )
+		
+		# to get R^2 of 0.8, ssr/(ssr+sse)=0.8 so sse=0.2/0.8*ssr
+		e <- e* sqrt((1-R2)/R2*ssr/(sum(e^2)))
+		
+		# now for y
+		y <- yhat + e
 	}
 	if (ydistn=="binomial") {
-		e <- rbinom(nrow(x), 1, prob)
-		e <- resid( glm( e ~ ., data=x, family = binomial) )
+    prob <- exp(yhat)/(1 + exp(yhat))
+    runis <- runif(nrow(x), 0, 1)
+    y <- ifelse(runis < prob, 1, 0)
 	}
-
-	# to get R^2 of 0.8, ssr/(ssr+sse)=0.8 so sse=0.2/0.8*ssr
-	e <- e* sqrt((1-R2)/R2*ssr/(sum(e^2)))
-
-	# now for y
-	y <- yhat + e
 
 	# put into a data frame and test
 	mydata <- data.frame( y=y, x)
+	return(mydata)
 
 }
 
