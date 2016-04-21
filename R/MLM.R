@@ -24,6 +24,7 @@ simz <- function(n, means, sds) {
 
 # Need to figure out how to apply this to a binomial case... or whether this is the proper way to
 # address the issue overall.
+# info for the binomial data were taken from this: http://www.r-bloggers.com/example-7-2-simulate-data-from-a-logistic-regression/
 
 MLM <- function(x, b, ydistn = c("normal", "binomial"), intercept=1, R2 = NULL, prob = NULL) {
 	bx <- list()
