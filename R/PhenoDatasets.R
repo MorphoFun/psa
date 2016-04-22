@@ -43,17 +43,17 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\describe{
 #'			\item{\code{w}}{relative fitness, based on survival for all males and females pooled together.}
 #'			\item{\code{W}}{absolute fitness, based on survival for all males and females pooled together.}
-#'			\item{\code{TotalLength.mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
-#'			\item{\code{AlarExtent.mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
-#'			\item{\code{Weight.g}}{total weight in grams.}
-#'			\item{\code{SkullL.mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
-#'			\item{\code{HumerusL.mm}}{length of the humerus (upper arm bone) in millimeters.}
-#'			\item{\code{FemurL.mm}}{length of the femur (thigh bone) in millimeters.}
-#'			\item{\code{TibioTarL.mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
-#'			\item{\code{SkullW.mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
-#'			\item{\code{SternumL.mm}}{length of the keel of the sternum in millimeters.}
+#'			\item{\code{TotalLength_mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
+#'			\item{\code{AlarExtent_mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
+#'			\item{\code{Weight_g}}{total weight in grams.}
+#'			\item{\code{SkullL_mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
+#'			\item{\code{HumerusL_mm}}{length of the humerus (upper arm bone) in millimeters.}
+#'			\item{\code{FemurL_mm}}{length of the femur (thigh bone) in millimeters.}
+#'			\item{\code{TibioTarL_mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
+#'			\item{\code{SkullW_mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
+#'			\item{\code{SternumL_mm}}{length of the keel of the sternum in millimeters.}
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
-#'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
+#'			\item{\code{AgeGroup}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
 #' @format A data.frame with 136 observations and 13 variables.
 #' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
@@ -84,17 +84,17 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\describe{
 #'			\item{\code{w}}{relative fitness, based on survival for only females pooled together.}
 #'			\item{\code{W}}{absolute fitness, based on survival for only females pooled together.}
-#'			\item{\code{TotalLength.mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
-#'			\item{\code{AlarExtent.mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
-#'			\item{\code{Weight.g}}{total weight in grams.}
-#'			\item{\code{SkullL.mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
-#'			\item{\code{HumerusL.mm}}{length of the humerus (upper arm bone) in millimeters.}
-#'			\item{\code{FemurL.mm}}{length of the femur (thigh bone) in millimeters.}
-#'			\item{\code{TibioTarL.mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
-#'			\item{\code{SkullW.mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
-#'			\item{\code{SternumL.mm}}{length of the keel of the sternum in millimeters.}
+#'			\item{\code{TotalLength_mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
+#'			\item{\code{AlarExtent_mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
+#'			\item{\code{Weight_g}}{total weight in grams.}
+#'			\item{\code{SkullL_mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
+#'			\item{\code{HumerusL_mm}}{length of the humerus (upper arm bone) in millimeters.}
+#'			\item{\code{FemurL_mm}}{length of the femur (thigh bone) in millimeters.}
+#'			\item{\code{TibioTarL_mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
+#'			\item{\code{SkullW_mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
+#'			\item{\code{SternumL_mm}}{length of the keel of the sternum in millimeters.}
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
-#'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
+#'			\item{\code{AgeGroup}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
 #' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @format data.frame with 49 observations and 13 variables
@@ -124,17 +124,17 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\describe{
 #'			\item{\code{w}}{relative fitness, based on survival for only males pooled together.}
 #'			\item{\code{W}}{absolute fitness, based on survival for only males pooled together.}
-#'			\item{\code{TotalLength.mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
-#'			\item{\code{AlarExtent.mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
-#'			\item{\code{Weight.g}}{total weight in grams.}
-#'			\item{\code{SkullL.mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
-#'			\item{\code{HumerusL.mm}}{length of the humerus (upper arm bone) in millimeters.}
-#'			\item{\code{FemurL.mm}}{length of the femur (thigh bone) in millimeters.}
-#'			\item{\code{TibioTarL.mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
-#'			\item{\code{SkullW.mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
-#'			\item{\code{SternumL.mm}}{length of the keel of the sternum in millimeters.}
+#'			\item{\code{TotalLength_mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
+#'			\item{\code{AlarExtent_mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
+#'			\item{\code{Weight_g}}{total weight in grams.}
+#'			\item{\code{SkullL_mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
+#'			\item{\code{HumerusL_mm}}{length of the humerus (upper arm bone) in millimeters.}
+#'			\item{\code{FemurL_mm}}{length of the femur (thigh bone) in millimeters.}
+#'			\item{\code{TibioTarL_mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
+#'			\item{\code{SkullW_mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
+#'			\item{\code{SternumL_mm}}{length of the keel of the sternum in millimeters.}
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
-#'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
+#'			\item{\code{AgeGroup}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
 #' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @format data.frame with 87 observations and 13 variables
@@ -164,15 +164,15 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Barombi.}
 #'	\item{\code{W}}{absolute fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Barombi.}
-#'	\item{\code{ascending.process.cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
-#'	\item{\code{body.depth.cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-#'	\item{\code{orbit.diameter.cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
-#'	\item{\code{head.depth.cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-#'	\item{\code{jaw.length.cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
-#'	\item{\code{row.ID}}{integer to identify the row number for each observation.}
+#'	\item{\code{ascendingProcess_cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
+#'	\item{\code{bodyDepth_cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+#'	\item{\code{orbitDiameter_cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
+#'	\item{\code{headDepth_cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+#'	\item{\code{jawLength_cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
+#'	\item{\code{rowID}}{integer to identify the row number for each observation.}
 #'	\item{\code{fishID}}{individual identification number for each fish.}
 #'	\item{\code{lake}}{lake that the fish were collected from.}
-#'	\item{\code{species.diagnostic.coloration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
+#'	\item{\code{speciesDiagnosticColoration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
 #'}
 #' @source These data were obtained from the "fitness dataset" tab of the "Complete Dataset" Excel spreadsheet that is available on Dryad: \url{http://datadryad.org/resource/doi:10.5061/dryad.rn30d}, and are associated with Martin (2012).
 #' @format data.frame with 573 observations and 11 variables
@@ -200,15 +200,15 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Ejagham.}
 #'	\item{\code{W}}{absolute fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Ejagham.}
-#'	\item{\code{ascending.process.cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
-#'	\item{\code{body.depth.cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-#'	\item{\code{orbit.diameter.cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
-#'	\item{\code{head.depth.cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-#'	\item{\code{jaw.length.cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
-#'	\item{\code{row.ID}}{integer to identify the row number for each observation.}
+#'	\item{\code{ascendingProcess_cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
+#'	\item{\code{bodyDepth_cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+#'	\item{\code{orbitDiameter_cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
+#'	\item{\code{headDepth_cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+#'	\item{\code{jawLength_cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
+#'	\item{\code{rowID}}{integer to identify the row number for each observation.}
 #'	\item{\code{fishID}}{individual identification number for each fish.}
 #'	\item{\code{lake}}{lake that the fish were collected from.}
-#'	\item{\code{species.diagnostic.coloration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
+#'	\item{\code{speciesDiagnosticColoration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
 #'}
 #' @source These data were obtained from the "fitness dataset" tab of the "Complete Dataset" Excel spreadsheet that is available on Dryad: \url{http://datadryad.org/resource/doi:10.5061/dryad.rn30d}, and are associated with Martin (2012).
 #' @format data.frame with 523 observations and 11 variables
@@ -240,9 +240,9 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\item{\code{ws}}{relative fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for all larvae.}
 #'	\item{\code{Wr}}{absolute fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for all larvae. 1 = survived, 0 = died.}
 #'	\item{\code{Ws}}{absolute fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for all larvae.}
-#'	\item{\code{larvalArea.um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
-#'	\item{\code{hatchTime.mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
-#'	\item{\code{settleTime.mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
+#'	\item{\code{larvalArea_um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
+#'	\item{\code{hatchTime_mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
+#'	\item{\code{settleTime_mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
 #'	\item{\code{trial}}{one of five replicate runs ("trials") that were run betwen May and October 2009.}
 #'	\item{\code{individual}}{individual identification code.}
 #'	\item{\code{treatment}}{experimental treatment group (LD = low density, HD = high density).}
@@ -275,9 +275,9 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\item{\code{ws}}{relative fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the high density treatment.}
 #'	\item{\code{Wr}}{absolute fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for larvae in the high density treatment. 1 = survived, 0 = died.}
 #'	\item{\code{Ws}}{absolute fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the high density treatment.}
-#'	\item{\code{larvalArea.um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
-#'	\item{\code{hatchTime.mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
-#'	\item{\code{settleTime.mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
+#'	\item{\code{larvalArea_um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
+#'	\item{\code{hatchTime_mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
+#'	\item{\code{settleTime_mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
 #'	\item{\code{trial}}{one of five replicate runs ("trials") that were run betwen May and October 2009.}
 #'	\item{\code{individual}}{individual identification code.}
 #'	\item{\code{treatment}}{experimental treatment group (LD = low density, HD = high density).}
@@ -310,9 +310,9 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'	\item{\code{ws}}{relative fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the low density treatment.}
 #'	\item{\code{Wr}}{absolute fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for larvae in the low density treatment. 1 = survived, 0 = died.}
 #'	\item{\code{Ws}}{absolute fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the low density treatment.}
-#'	\item{\code{larvalArea.um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
-#'	\item{\code{hatchTime.mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
-#'	\item{\code{settleTime.mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
+#'	\item{\code{larvalArea_um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
+#'	\item{\code{hatchTime_mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
+#'	\item{\code{settleTime_mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
 #'	\item{\code{trial}}{one of five replicate runs ("trials") that were run betwen May and October 2009.}
 #'	\item{\code{individual}}{individual identification code.}
 #'	\item{\code{treatment}}{experimental treatment group (LD = low density, HD = high density).}
@@ -345,7 +345,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'\describe{
 #'	\item{\code{w}}{relative fitness, based on the emergence/survivorship of the host-specific gall-former \emph{Belonocnema treatae} (\code{BtreataeEmergence}) on it host plant (the plateau live oak \emph{Quercus fusiformis}).}
 #'	\item{\code{W}}{absolute fitness, based on the emergence/survivorship of the host-specific gall-former \emph{Belonocnema treatae} (\code{BtreataeEmergence}) on it host plant (the plateau live oak \emph{Quercus fusiformis}).  1 = emerged/survived, 0 = no emergence.}
-#'	\item{\code{gallSizeDiameter.mm}}{diameter of the galls produced by \emph{B. treatae} on its host plant, in units of millimeters and measured to the nearest 0.01 mm.}
+#'	\item{\code{gallSizeDiameter_mm}}{diameter of the galls produced by \emph{B. treatae} on its host plant, in units of millimeters and measured to the nearest 0.01 mm.}
 #'	\item{\code{year}}{year that the data were collected (either 2004 or 2008)}
 #'	\item{\code{tree}}{individual identification of the tree that was sampled. Each tree was treated as a separate population.}
 #'	\item{\code{bagPerReplicate}}{identication number of the bag/enclosure that was treated as a blocking factor within each tree.}
@@ -484,13 +484,13 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #' @description Raw data from the Howard (1979) study on sexual selection on body size in male \emph{Rana catesbeiana} bullfrogs during 1976.  These data were transcribed from Table 1 in Howard (1979) and then formatted for use in this R package. \code{Bullfrogs} contains the following variables:
 #'
 #'\describe{
-#'	\item{\code{BodySize.mm}}{Body size of the individual, based on snout-ischium length in millimeters}
-#'	\item{\code{w.TotalCops}}{Relative fitness for mating success (sexual selection), based on the total number of copulations.}
-#'	\item{\code{w.TotalZygotes}}{Relative fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
-#'	\item{\code{w.TotalHatchlings}}{Relative fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
-#'	\item{\code{W.TotalCops}}{Absolute fitness for mating success (sexual selection), based on the total number of copulations.}
-#'	\item{\code{W.TotalZygotes}}{Absolute fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
-#'	\item{\code{W.TotalHatchlings}}{Absolute fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
+#'	\item{\code{BodySize_mm}}{Body size of the individual, based on snout-ischium length in millimeters}
+#'	\item{\code{wTotalCops}}{Relative fitness for mating success (sexual selection), based on the total number of copulations.}
+#'	\item{\code{wTotalZygotes}}{Relative fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
+#'	\item{\code{wTotalHatchlings}}{Relative fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
+#'	\item{\code{WTotalCops}}{Absolute fitness for mating success (sexual selection), based on the total number of copulations.}
+#'	\item{\code{WTotalZygotes}}{Absolute fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
+#'	\item{\code{WTotalHatchlings}}{Absolute fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
 #'	\item{\code{Ind}}{Individual identification number. Note: one individual had a multi-number ID (i.e., 3-7) and another was not assigned a specific ID and was designated as "NA".}
 #'}
 #' @source These data were obtained from Table 1 in Howard (1979): \url{http://www.jstor.org/stable/2460219}.
