@@ -28,7 +28,7 @@ The function returns an object of classes "\code{glam}", "\code{lm}", and "\code
 \code{glam} is used to fit generalized linear models, specified by error distributions and link functions as denoted by \code{family}, using approaches based on the quantitative framework established by Lande and Arnold (1983). Statistical methods are based on \code{glm} for linear models and \code{glmer} for linear mixed effects models. An option to employ the Janzen and Stern (1998) correction factor for logistic regression models is available via \code{JS = TRUE}. Model formulae are constructed such that regression coefficients and standard errors for quadratic terms do NOT need to be doubled (Stinchcombe et al. 2008)
 }
 \details{
-The Lande-Arnold Method is based on the
+The Lande-Arnold Method is based on the 1983 paper by Russell Lande and Stevan Arnold, entitled "The measurement of selection on correlated characters". Their method involves applying ordinary least-squares (OLS) regression to estimate selection gradients.
 }
 \section{Value}{
  \code{GL}

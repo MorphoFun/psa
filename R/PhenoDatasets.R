@@ -55,6 +55,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'			\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
 #'			\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 #'			}
+#' @format A data.frame with 136 observations and 13 variables.
 #' @source A spreadsheet of the morphological data was obtained from the Field Museum: \url{http://www.fieldmuseum.org/science/blog/hermon-bumpus-and-house-sparrows}, with measurements in inches converted to millimeters.
 #' @references Bumpus, H.C. 1899. The elimination of the unfit as illustrated by the introduced sparrow, \emph{Passer domesticus}. \emph{Biol. Lectures, Woods Hole Marine Biol. Station}: 209-226.
 #' @usage Bumpus
@@ -70,6 +71,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data=Bumpus[,c(1,3:11)])
 #'
+"Bumpus"
 
 
 ####### BUMPUS FEMALES ########
@@ -109,8 +111,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data=BumpusFemales[,c(1,3:11)])
-
-
+"BumpusFemales"
 
 
 ####### BUMPUS MALES ########
@@ -150,6 +151,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data=BumpusMales[,c(1,3:11)])
+"BumpusMales"
 
 
 ####### CameroonCichlids ########
@@ -187,7 +189,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data=CichlidBarombi[,1:5])
-
+"CichlidBarombi"
 
 
 #' @title Cameroon crater lake cichlids from the Ejagham lake
@@ -223,6 +225,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data=CichlidEjagham[,1:5])
+"CichlidEjagham"
 
 
 ###### LarvalSquirts #######
@@ -259,7 +262,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with wr as the response and the phenotypic traits as the predictors
 #' lm(wr ~ ., data = LarvalSquirts[,5:7])
-
+"LarvalSquirts"
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in high density
@@ -294,7 +297,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with wr as the response and the phenotypic traits as the predictors
 #' lm(wr ~ ., data = LarvalSquirtsHD[,5:7])
-
+"LarvalSquirtsHD"
 
 
 #' @title Larvae of sea squirts (\emph{Styela plicata}) in low density
@@ -329,7 +332,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with wr as the response and the phenotypic traits as the predictors
 #' lm(wr ~ ., data = LarvalSquirtsLD[,5:7])
-
+"LarvalSquirtsLD"
 
 
 ###### Galls #######
@@ -361,7 +364,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with wr as the response and the phenotypic traits as the predictors
 #' lm(wr ~ ., data = Galls[,3])
-
+"Galls"
 
 
 ###### FlyCHC #######
@@ -397,7 +400,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regerssion with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data = FlyCHC[,3:9])
-
+"FlyCHC"
 
 
 ####### Flowers ########
@@ -435,7 +438,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with wm as the response and the morphological traits as the predictors
 #' lm(wm ~ ., data = Flowers[,5:11])
-
+"Flowers"
 
 
 ####### DesertPlants ########
@@ -470,7 +473,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w as the response and the morphological traits as the predictors
 #' lm(w ~ ., data = DesertPlants[,1:6])
-
+"DesertPlants"
 
 
 ####### Bullfrogs ########
@@ -504,4 +507,4 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #'
 #' # Run a linear regression with w.TotalCops as the response and the morphological traits as the predictors
 #' lm(wTotalZygotes ~ BodySize.mm, data=Bullfrogs)
-
+"Bullfrogs"
