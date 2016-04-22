@@ -15,13 +15,13 @@ Bullfrogs
 Raw data from the Howard (1979) study on sexual selection on body size in male \emph{Rana catesbeiana} bullfrogs during 1976.  These data were transcribed from Table 1 in Howard (1979) and then formatted for use in this R package. \code{Bullfrogs} contains the following variables:
 
 \describe{
-\item{\code{BodySize.mm}}{Body size of the individual, based on snout-ischium length in millimeters}
-\item{\code{w.TotalCops}}{Relative fitness for mating success (sexual selection), based on the total number of copulations.}
-\item{\code{w.TotalZygotes}}{Relative fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
-\item{\code{w.TotalHatchlings}}{Relative fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
-\item{\code{W.TotalCops}}{Absolute fitness for mating success (sexual selection), based on the total number of copulations.}
-\item{\code{W.TotalZygotes}}{Absolute fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
-\item{\code{W.TotalHatchlings}}{Absolute fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
+\item{\code{BodySize_mm}}{Body size of the individual, based on snout-ischium length in millimeters}
+\item{\code{wTotalCops}}{Relative fitness for mating success (sexual selection), based on the total number of copulations.}
+\item{\code{wTotalZygotes}}{Relative fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
+\item{\code{wTotalHatchlings}}{Relative fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
+\item{\code{WTotalCops}}{Absolute fitness for mating success (sexual selection), based on the total number of copulations.}
+\item{\code{WTotalZygotes}}{Absolute fitness for fertility per mate (natural selection), based on the total number of zygotes produced.}
+\item{\code{WTotalHatchlings}}{Absolute fitness for offspring survivorship (natural selection), based on the total number of hatchlings surviving.}
 \item{\code{Ind}}{Individual identification number. Note: one individual had a multi-number ID (i.e., 3-7) and another was not assigned a specific ID and was designated as "NA".}
 }
 }

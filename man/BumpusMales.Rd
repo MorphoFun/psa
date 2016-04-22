@@ -17,17 +17,17 @@ Raw data from the \code{Bumpus} (1899) study on morphological selection in sparr
 \describe{
 		\item{\code{w}}{relative fitness, based on survival for only males pooled together.}
 		\item{\code{W}}{absolute fitness, based on survival for only males pooled together.}
-		\item{\code{TotalLength.mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
-		\item{\code{AlarExtent.mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
-		\item{\code{Weight.g}}{total weight in grams.}
-		\item{\code{SkullL.mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
-		\item{\code{HumerusL.mm}}{length of the humerus (upper arm bone) in millimeters.}
-		\item{\code{FemurL.mm}}{length of the femur (thigh bone) in millimeters.}
-		\item{\code{TibioTarL.mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
-		\item{\code{SkullW.mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
-		\item{\code{SternumL.mm}}{length of the keel of the sternum in millimeters.}
+		\item{\code{TotalLength_mm}}{length from the tip of the beak to the tip of the tail in millimeters.}
+		\item{\code{AlarExtent_mm}}{length of the wing span, from the tip of the left wing to the tip of the right wing in millimeters.}
+		\item{\code{Weight_g}}{total weight in grams.}
+		\item{\code{SkullL_mm}}{length of the skull, from the tip of the beak to the occiput in millimeters.}
+		\item{\code{HumerusL_mm}}{length of the humerus (upper arm bone) in millimeters.}
+		\item{\code{FemurL_mm}}{length of the femur (thigh bone) in millimeters.}
+		\item{\code{TibioTarL_mm}}{length of the tibiotarsus (lower leg bone) in millimeters.}
+		\item{\code{SkullW_mm}}{width of the skull, from the left postorbital bone to the right postorbital bone, in millimeters.}
+		\item{\code{SternumL_mm}}{length of the keel of the sternum in millimeters.}
 		\item{\code{Sex}}{sex of the individual (1 = male, 0 = female).}
-		\item{\code{Age.Group}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
+		\item{\code{AgeGroup}}{ontogenetic age group (1 = adult, 0 = young, NA = not available).}
 		}
 }
 \examples{

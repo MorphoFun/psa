@@ -19,9 +19,9 @@ Raw data from the Crean et al. (2011) study on phenotypic selection across the m
 \item{\code{ws}}{relative fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the high density treatment.}
 \item{\code{Wr}}{absolute fitness based on postmetamorphic survival to reproduction after 4 months in the field (\code{survivalToReprod}) for larvae in the high density treatment. 1 = survived, 0 = died.}
 \item{\code{Ws}}{absolute fitness based on postmetamorphic growth, using wet weight (in grams) after 4 months in the field as a proxy (\code{wetWeight4months.g}) for larvae in the high density treatment.}
-\item{\code{larvalArea.um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
-\item{\code{hatchTime.mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
-\item{\code{settleTime.mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
+\item{\code{larvalArea_um2}}{area of the larva, "estimated from the average of at least three measurements", in units of squared micrometers.}
+\item{\code{hatchTime_mins}}{time to hatching, a premetamorphic trait used as a proxy for development time, in units of minutes.}
+\item{\code{settleTime_mins}}{time to settlement, a premetamorphic trait measured every 4 hours, in units of minutes. "Larvae that had not settled within 25 hours posthatch were excluded from their analyses (n = 3)".}
 \item{\code{trial}}{one of five replicate runs ("trials") that were run betwen May and October 2009.}
 \item{\code{individual}}{individual identification code.}
 \item{\code{treatment}}{experimental treatment group (LD = low density, HD = high density).}

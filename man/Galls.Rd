@@ -17,7 +17,7 @@ Raw data from the Egan et al. (2011) study on phenotypic selection on gall size 
 \describe{
 \item{\code{w}}{relative fitness, based on the emergence/survivorship of the host-specific gall-former \emph{Belonocnema treatae} (\code{BtreataeEmergence}) on it host plant (the plateau live oak \emph{Quercus fusiformis}).}
 \item{\code{W}}{absolute fitness, based on the emergence/survivorship of the host-specific gall-former \emph{Belonocnema treatae} (\code{BtreataeEmergence}) on it host plant (the plateau live oak \emph{Quercus fusiformis}).  1 = emerged/survived, 0 = no emergence.}
-\item{\code{gallSizeDiameter.mm}}{diameter of the galls produced by \emph{B. treatae} on its host plant, in units of millimeters and measured to the nearest 0.01 mm.}
+\item{\code{gallSizeDiameter_mm}}{diameter of the galls produced by \emph{B. treatae} on its host plant, in units of millimeters and measured to the nearest 0.01 mm.}
 \item{\code{year}}{year that the data were collected (either 2004 or 2008)}
 \item{\code{tree}}{individual identification of the tree that was sampled. Each tree was treated as a separate population.}
 \item{\code{bagPerReplicate}}{identication number of the bag/enclosure that was treated as a blocking factor within each tree.}

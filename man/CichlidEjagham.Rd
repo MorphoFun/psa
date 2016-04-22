@@ -17,15 +17,15 @@ Raw data from the Martin (2012) study on morphological selection in Cameroon cra
 \describe{
 \item{\code{w}}{relative fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Ejagham.}
 \item{\code{W}}{absolute fitness, based on relative growth rates averaged from multiple measurements of the spacing between scale circuli of fishes from Ejagham.}
-\item{\code{ascending.process.cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
-\item{\code{body.depth.cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-\item{\code{orbit.diameter.cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
-\item{\code{head.depth.cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
-\item{\code{jaw.length.cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
-\item{\code{row.ID}}{integer to identify the row number for each observation.}
+\item{\code{ascendingProcess_cm}}{distance "from the dorsal tip of the ascending process of the premaxilla to the tip of the most anterior tooth on the dentigerous arm of the premaxilla" (in centimeters).}
+\item{\code{bodyDepth_cm}}{the distance "from the insertion of the first dorsal fin ray to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+\item{\code{orbitDiameter_cm}}{average of the diameters of the orbit (eye socket), taken from the horizontal and vertical axes of the fish (in centimeters).}
+\item{\code{headDepth_cm}}{distance "from the insertion of the epaxial muscle on the dorsal surface of the neurocranium to the ventral surface, perpendicular to the major axis of the fish" (in centimeters).}
+\item{\code{jawLength_cm}}{distance "from the center of the protruding quadrate-articular joint on the external jaw line to the tip of the most anterior tooth on the mandible" (in centimeters).}
+\item{\code{rowID}}{integer to identify the row number for each observation.}
 \item{\code{fishID}}{individual identification number for each fish.}
 \item{\code{lake}}{lake that the fish were collected from.}
-\item{\code{species.diagnostic.coloration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
+\item{\code{speciesDiagnosticColoration}}{assignment of species based on species-diagnostic-melanin-coloration. Individuals that could not be accurately identified to species were labeled as "ambiguous".}
 }
 }
 \examples{
