@@ -71,7 +71,7 @@ glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep
 		stop("negative fitness is not allowed")
 
 	if (fitType=="gaussian" && isTRUE(JS))
-		stop("Janzen and Stern (JS) correction only applicable to binomial response types")
+		stop("Janzen and Stern (JS) correction only applicable to binomial response types. Change fitType to binomial")
 
 	if (round(colMeans(z),6)==0 && sapply(z, FUN=function(x) sd(x))==1 && isTRUE(prep))
 		warning("z data seem to be standardized to mean of zero and unit variance already. Consider setting 'prep' to FALSE and re-run glam model.")

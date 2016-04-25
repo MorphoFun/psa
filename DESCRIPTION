@@ -13,6 +13,7 @@ BugReports: https://github.com/MorphoFun/psa/issues
 URL: https://github.com/MorphoFun/psa
 LazyData: TRUE
 Suggests:
-    knitr
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
