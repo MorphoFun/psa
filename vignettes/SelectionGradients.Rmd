@@ -64,7 +64,7 @@ To demonstrate the functionality of glam, we will be using the male sparrow data
 bmlm <- glam(w, log(z), fitType = "gaussian")
 
 # Gradients for linear selection will be stored under object$GL
-summary.glam(bmlm$GL)
+#summary.glam(bmlm$GL)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the standardized beta (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Linear regression analysis'.
 ```
@@ -85,7 +85,7 @@ We will return to these warning messages later in the vignette.
 
 ```{r}
 # Gradients for linear selection will be stored under object$GL
-summary.glam(bmjs$GL)
+#summary.glam(bmjs$GL)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the beta avggrad (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Logistic regression analysis'.
 
