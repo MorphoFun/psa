@@ -317,24 +317,17 @@ glamx <- function(w, z, method = c("linear", "nonlinear", "both")) {
 }
 
 
-### Save the output as a .txt file
-saveR <- function (object, file) {
-	sink(file)
-	print(object)
-	sink(NULL)
-}
-
-
-
 #' @title Summarizing regression models for class 'glam'
 #'
 #' @name summary.glam
 #'
 #' @usage summary.glam(object, JS = FALSE, dispersion = NULL, correlation = FALSE, symbolic.cor = FALSE, ...)
 #' @description \code{summary.glam} provides the summary information for class \code{glam, glm} or \code{lm}. Output is similar to \code{summary}, except that an option to apply the Janzen and Stern (1998) correction for logistic regressions is available in \code{summary.glam}.
-#' @param \code{object}
+#' 
+#' @param \code{object} Object of the class 'glam'.
+#' @param \code{JS} Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.
 #'
-#' @details Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Output for logistic regressions have the option of applying the Janzen and Stern (1998) correction factor to make estimates from logistic regressions congruent with those of the OLS method from Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008).
+#' @details Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Data with binomial fitness measures have the option of applying the Janzen and Stern (1998) correction factor to make estimates from logistic regressions congruent with those of the OLS method from Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The code from summary.glam is based on base code base::summary, with modifications to calculate p-values using the regression estimates produced by the Janzen and Stern (1998) modifications.
 #'
 #' @references Janzen FJ, Stern HL. 1998. Logistic regression for empirical studies of multivariate selection. \emph{Evolution} 52(6): 1564-1571. \url{http://www.jstor.org/stable/2411330?seq=1#page_scan_tab_contents}
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
@@ -350,7 +343,7 @@ saveR <- function (object, file) {
 summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = FALSE, symbolic.cor = FALSE,
 	...) {
 	if (is.null(object$JS)==FALSE && identical(object$JS, JS)==FALSE)
-		stop("mismatch between JS in glm object and summary.blam's optional JS designation")
+		stop("mismatch between JS in glm object and summary.blam's optional JS designation. Try setting JS = TRUE")
 
 	if (is.null(object$BNL)==FALSE) {
 		prepr <- function(z) {

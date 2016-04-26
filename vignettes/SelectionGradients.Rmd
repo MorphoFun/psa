@@ -45,27 +45,27 @@ w <- BumpusMales[,1]
 z <- BumpusMales[,3:11]
 ```
 
-#### Since Weight is a volume, and the other traits are linear measurements, we need to adjust for the dimensionality differences by taking the cube root of Weight.g. (Alternatively, one could cube all of the other phenotypic traits except Weight.g)
+#### Since Weight is a volume, and the other traits are linear measurements, we need to adjust for the dimensionality differences by taking the cube root of Weight_g. (Alternatively, one could cube all of the other phenotypic traits except Weight_g)
 ```{r}
 z$Weight_g <- z$Weight_g^(1/3)
 ```
 
 ## Calculate the selection gradients, using the Lande-Arnold Method
 #### This can be implemented by using psa::glam
-The benefit of using psa::glam over stats::lm or stats::glm is that glam has built-in options to make the regression coefficients more directly comparable to selection gradients. There are three main benefits to using glam:
+The benefit of using psa::glam over stats::lm or stats::glm is that glam has built-in options to make the regression coefficients more directly comparable to selection gradients. There are four main benefits to using glam:
 1. glam will check whether the data are centered to a mean of zero and standardized to unit variance prior, and will proceed with these standardizations as a default if raw data are entered into the function.   
-1. Both linear and nonlinear selection are evaluated, and are output in separate lists. "GL" = gradients for linear selection, and "GNL" = gradients for nonlinear selection. The linear terms in the nonlinear selection analysis should be ignored, but represent biased estimates of linear selection and should be ignored. Linear selection gradients should only be evaluated in the GL, which implements only a linear-terms analysis.    
+1. Both linear and nonlinear selection are evaluated, and are output in separate lists. "GL" = gradients for linear selection, and "GNL" = gradients for nonlinear selection. The linear terms in the nonlinear selection analysis should be ignored, but represent biased estimates of linear selection and should be ignored. Linear selection gradients should only be evaluated in the GL, which only conducts a first order model.    
 1. Quadratic regression coefficients and their associated standard errors from standard statistical programs need to be doubled in order to generate appropriate quadratic selection gradients and standard errors. Such an oversight has resulted in substantial underestimation of the strength of quadratic selection (Stincombe et al. 2008). However, glam automatically accounts for this discrepancy, so that the outputted coefficients represent the selection gradients, and do not require further modification.    
-1. There is also an option to apply the Janzen and Stern (1998) correction factor to convert logistic regression coefficients to comparable selection gradients and, again, quadratic regression coefficients do not need to be doubled. glam will also automatically analyze both quadratic and correlational selection, so users can easily output a comprehensive dataset to publish results on both linear and nonlinear selection.       
+1. There is also an option to apply the Janzen and Stern (1998) correction factor to convert logistic regression coefficients to comparable selection gradients and, again, quadratic regression coefficients do not need to be doubled. glam will also automatically analyze both quadratic and correlational selection using the Janzen and Stern modification, so users can easily output a comprehensive dataset to publish results on both linear and nonlinear selection.       
 
-To demonstrate the functionality of glam, we will be using the male sparrow data from the classic Bumpus (1968) study to reproduce the results from the Janzen and Stern (1998) paper that provided a comparison of the Lande-Arnold (1983) multiple linear regression method and the Janzen-Stern (1998) multiple logistic regression with a correction factor. The results calculated herein will replicate the results from Table 1 in Janzen and Stern (1998). The phenotypic traits (z) will be log-transformed to linearize the data, and was done in both Lande and Arnold (1983) and Janzen and Stern (1998).
+To demonstrate the functionality of glam, we will be using the male sparrow data from the classic Bumpus (1968) study to reproduce the results from the Janzen and Stern (1998) paper that provided a comparison of the Lande-Arnold (1983) multiple linear regression method and the Janzen-Stern (1998) multiple logistic regression with a correction factor. The results calculated herein will replicate the results from Table 1 in Janzen and Stern (1998). The phenotypic traits (z) will be log-transformed to linearize the data, and evaluated with both the Lande and Arnold (1983) and Janzen and Stern (1998) methods. 
 
 #### Here are the results based on the Lande-Arnold method:  
 ```{r}
 bmlm <- glam(w, log(z), fitType = "gaussian")
 
 # Gradients for linear selection will be stored under object$GL
-#summary.glam(bmlm$GL)
+summary.glam(bmlm$GL)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the standardized beta (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Linear regression analysis'.
 ```
@@ -86,7 +86,7 @@ We will return to these warning messages later in the vignette.
 
 ```{r}
 # Gradients for linear selection will be stored under object$GL
-#summary.glam(bmjs$GL)
+summary.glam(bmjs$GL, JS = TRUE)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the beta avggrad (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Logistic regression analysis'.
 
