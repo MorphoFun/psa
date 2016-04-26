@@ -13,7 +13,7 @@ summary.glam(object, JS = FALSE, dispersion = NULL, correlation = FALSE, symboli
 \code{summary.glam} provides the summary information for class \code{glam, glm} or \code{lm}. Output is similar to \code{summary}, except that an option to apply the Janzen and Stern (1998) correction for logistic regressions is available in \code{summary.glam}.
 }
 \details{
-Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Output for logistic regressions have the option of applying the Janzen and Stern (1998) correction factor to make estimates from logistic regressions congruent with those of the OLS method from Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008).
+Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Data with binomial fitness measures have the option of applying the Janzen and Stern (1998) correction factor to make estimates from logistic regressions congruent with those of the OLS method from Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The code from summary.glam is based on base code base::summary, with modifications to calculate p-values using the regression estimates produced by the Janzen and Stern (1998) modifications.
 }
 \examples{
 
