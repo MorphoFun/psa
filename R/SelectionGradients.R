@@ -47,7 +47,7 @@
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
 #'
-#' @seealso \code{glamx}, \code{glm}, \code{lm}, \code{summary.blam}, \code{glmer}
+#' @seealso \code{glamx}, \code{glm}, \code{lm}, \code{summary.glam}, \code{glmer}
 #' @examples
 #' # use the BumpusMales data set from the tremors package
 #' data(BumpusMales)
@@ -203,9 +203,44 @@ glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep
 # Is it confusing that the linear terms in nonlinear Comparisons are from the linear models?
 
 ## Need to update/double-check glamx, so that it is congruent with glam and usable with summary.glam
+####### NEED TO WRITE DOCUMENTATION FOR GLAMX ######
 
+#' @title Comparison of selection gradients with different trait choices
+#'
+#' @name glamx
+#' @description \code{glamx} is used to fit generalized linear models, specified by error distributions and link functions as denoted by \code{family}, using approaches based on the quantitative framework established by Lande and Arnold (1983). Statistical methods are based on \code{glm} for linear models and \code{glmer} for linear mixed effects models. An option to employ the Janzen and Stern (1998) correction factor for logistic regression models is available via \code{JS = TRUE}. Model formulae are constructed such that regression coefficients and standard errors for quadratic terms do NOT need to be doubled (Stinchcombe et al. 2008). *Note* Only the OLS is currently supported in this version of the function.
+#'
+#' @usage glamx(fitness, z, method=c("linear", "nonlinear", "both"))
+#'
+#' @param \code{fitness} Fitness measure. Gaussian fitness types should be use relative fitness, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived). *Note* Only gaussian fitness measures are currently accepted in this version of the function.
+#' @param \code{z} Phenotypic traits.
+#' @param \code{method} Choice of whether analyses will be output for linear selection, nonlinear selection, or both. 
+#'
+#' @details The Lande-Arnold Method is based on the 1983 paper by Russell Lande and Stevan Arnold, entitled "The measurement of selection on correlated characters". Their method involves applying ordinary least-squares (OLS) regression to estimate selection gradients. 
+#'
+#' @return The function returns an object of classes "\code{glam}", "\code{lm}", and "\code{glm}."
+#'
+#' @section Value: \code{GL}
+#'
+#' @section Warning: \strong{These analyses are currently only available for longitudinal data}. Selection gradients for cross-sectional data must be evalated using matrix algebra rather than OLS regressions (Lande and Arnold 1983).
+#'
+#' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
+#'
+#' @seealso \code{glam}, \code{lm}, 
+#' @examples
+#' # use the BumpusMales data set 
+#' data(BumpusMales)
+#' 
+#' # Define the input
+#' fitness <- BumpusMales$w
+#' z <- BumpusMales[,3:11]
+#'
+#' # Calculate the selection gradients using glam
+#' mod1 <- glam(fitness, z, method = "linear")
+#'
+#' @export
 
-glamx <- function(w, z, method = c("linear", "nonlinear", "both")) {
+glamx <- function(fitness, z, method = c("linear", "nonlinear", "both")) {
 	# Creating the different lm models
 	method = method
 	dLx <- cbind(z, w = w)
@@ -332,6 +367,8 @@ glamx <- function(w, z, method = c("linear", "nonlinear", "both")) {
 #' @references Janzen FJ, Stern HL. 1998. Logistic regression for empirical studies of multivariate selection. \emph{Evolution} 52(6): 1564-1571. \url{http://www.jstor.org/stable/2411330?seq=1#page_scan_tab_contents}
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
+#' 
+#' @seealso \code{glam}, \code{summary}
 #' @examples
 #' 
 #' data(BumpusMales)
@@ -416,18 +453,18 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 
 		Qr <- qr.lm(object)
 		coef.p <- object$coefficients[Qr$pivot[p1]]
-    #ifelse(isTRUE(JS), coef.p <- object$coefficientsorig[Qr$pivot[p1]], coef.p <- object$coefficients[Qr$pivot[p1]])
-    
-		covmat.unscaled <- chol2inv(Qr$qr[p1, p1, drop = FALSE])
+    covmat.unscaled <- chol2inv(Qr$qr[p1, p1, drop = FALSE])
 		dimnames(covmat.unscaled) <- list(names(coef.p), names(coef.p))
 		covmat <- dispersion * covmat.unscaled
 		var.cf <- diag(covmat)
-		s.err <- sqrt(var.cf)
-
+		
+		ifelse(isTRUE(JS), s.err <- summary(object)$coefficients[,2], s.err <- sqrt(var.cf)) 
+		 # If JS = TRUE, SEs should be produced from the original logistic regression
+		 # If JS = FALSE, SEs shoudl be calculated from the coefficient values (as in summary.lm)
+		
 		#tvalue <- coef.p/s.err
     ifelse(isTRUE(JS), tvalue <- object$coefficientsorig[Qr$pivot[p1]]/s.err, tvalue <- coef.p/s.err)
 		JS.Correct.L <- mean(object$fitted.values*(1-object$fitted.values))
-		ifelse(JS==FALSE,   s.err <- sqrt(var.cf), s.err <- sqrt(var.cf)*JS.Correct.L)
 		
 		dn <- c("Estimate", "Std. Error")
 		if (!est.disp) {
@@ -534,10 +571,8 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 		cat("\n")
 		invisible(x)
 	}
-
+  class(ans) <- c("summary.glm", "summary.glam")
 	output <- print.summary.glam(ans)
-	class(output) <- c("summary.glm", "summary.glam")
-	print(ans$coefficients[,1])
 }
 
 
