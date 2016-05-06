@@ -1,5 +1,5 @@
 ---
-title: "Comparing selection gradients, direct selection on phenotypic traits"
+title: "Comparing selection gradients: direct selection on phenotypic traits"
 author: "Sandy Kawano"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -66,8 +66,15 @@ bmlm <- glam(w, log(z), fitType = "gaussian")
 
 # Gradients for linear selection will be stored under object$GL
 summary.glam(bmlm$GL)
+confint(bmlm$GL)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the standardized beta (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Linear regression analysis'.
+
+# Gradients for nonlinear selection will be stored under object$GNL
+summary.glam(bmlm$GNL)
+confint(bmlm$GNL)
+
+# Remember to ignore the linear terms from this second-order model; they do NOT represent the directional selection gradients. 
 ```
 
 #### Here are the results based on the Janzen-Stern method:
@@ -90,9 +97,41 @@ summary.glam(bmjs$GL, JS = TRUE)
 
 # Note that the Estimate, Std. Error, and Pr(>|t|) columns of the summary output match the beta avggrad (selection gradient), SE, and P columns of Table 1 in Janzen and Stern (1998) for the 'Logistic regression analysis'.
 
-# The custom summary function in psa must be used for analyses using the Janzen and Stern method because the base::summary function will not accurately calculate the t-value and, thus, p-values correctly given the transformed coefficients. This is because the Janzen and Stern method only affects the regression coefficients and their associated standard errors, but not the statistical testing. Yet, the summary function will calculate the p-value based on the t-value, which is calculated as a ratio of the regression coefficient to the standard error. 
+# The custom summary function (psa::summary.glam) must be used for analyses using the Janzen and Stern method because the base::summary function will not accurately calculate the t-value and, thus, p-values correctly for the logistic regression coefficients using the Janzen and Stern method. This is because the Janzen and Stern method only affects the regression coefficients, but not the statistical testing. Yet, the summary function will calculate the p-value based on the t-value, which is calculated as a ratio of the regression coefficient to the standard error. 
 ```
 
-Despite the fact that warning messages were issued for this analysis, glam still output the correct results for the Janzen and Stern approach for calculating linear selection gradients. The warning messages only apply to the nonlinear selection analysis, and occurs because the model is essentially overparamterized. What this means is that there are too few observations relative to the number of variables, and arises primarily because of the correlational/cross-product terms that increase precipitiously as the number of phenotypic traits increase. This is a common challenge in statistical analyses in all fields, and is often dubbed the 'n vs. p' problem.    
+Despite the fact that warning messages were issued for this analysis, glam still output the results for the Janzen and Stern approach for calculating linear selection gradients. The warning messages only apply to the nonlinear selection analysis, and occurs because the model is essentially overfit. Other big red flags are that the z values are all zero and the p-values are all one. Consequently, the estimates from this second order model suggest that the estimates from these nonlinear terms are unreliable. 
 
-There is current disagreement over the best approach to account for the multi-dimensionality problem. Some have suggested using Principal Components Analysis (PCA) to reduce the dimensionality of the data (e.g., Lande and Arnodl 1983), but that can make it difficult to deduce a straight-forward biological interpretation of the data. Others have used the PCA to select a subset of traits that describe the most amount of variation in the phenotypic data by only analyzing the top 6 traits that load highest on PC 1 or PC 2 (Kawano et al. 2013). However, there do not appear to be any studies to suggest that natural selection operates in the same manner as a PCA, so this method may lose biological relevance of the data.  
+Overfitting can arise when there are too few observations relative to the number of variables, and arises primarily because of the correlational/cross-product terms that increase precipitiously as the number of phenotypic traits increase. This is a common challenge in statistical analyses in all fields, and is often dubbed the 'n vs. p' problem.    
+
+There is current disagreement over the best approach to account for the multi-dimensionality problem. Some have suggested using Principal Components Analysis (PCA) to reduce the dimensionality of the data (e.g., Lande and Arnodl 1983), but that can make it difficult to deduce a straight-forward biological interpretation of the data. Others have used the PCA to select a subset of traits that describe the most amount of variation in the phenotypic data by only analyzing the top 6 traits that load highest on PC 1 or PC 2 (Kawano et al. 2013). However, there do not appear to be any studies to suggest that natural selection operates in the same manner as a PCA, so this method may lose biological relevance of the data. Others only analyze a subset of the traits that were measured, so that the model includes only a handful of traits that were considered to be important a prior. However, this could remove potentially important indirect interactions that could be under correlational selection... 
+
+#### Evaluating the sample size needed to run the second order logistic regression model 
+
+Peduzzi et al. (1996) recommended that the minimum sample size for a logistic regression model should be:
+  N = (10 * k)/p
+where N = the number of observations, k = number of covariates, and p = the lowest propertion of either of the dichotomous outcomes.
+
+For the male Bumpus data, this would then be: 
+```{r}
+  k = length(BumpusMales[,3:11]) = 9 
+  p = min(round(prop.table(table(BumpusMales$w)), digits = 2))
+  N = (10 * k)/p
+  N
+```
+Based on this general recommendation, there would need to be at least 220 observations in order to run a logistic regression model with such features. 
+
+However, a quick example that increases the sample size of the BumpusMales data by 6x shows that there are still problems, so this error cannot be solved by simply increasing the sample size. 
+```{r}
+# Generating the data
+bm6x <- data.frame(rbind(BumpusMales, BumpusMales, BumpusMales,BumpusMales, BumpusMales, BumpusMales))
+
+#performing the Janzen and Stern analysis.
+bmjs6x <- glam(bm6x$W, log(bm6x[,3:11]), fitType = "binomial", JS = TRUE)
+
+summary.glam(bmjs6x$GL, JS = TRUE)
+summary.glam(bmjs6x$GNL, JS = TRUE)
+
+```
+Peduzzi P, Concato J, Kemper E, Holford TR, Feinstein AR. 1996. A simulation study of the number of events per variable in logistic regression analysis. Journal of Clinical Epidemiology 49: 1373 - 1379.
+

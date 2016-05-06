@@ -59,8 +59,8 @@
 #' # Calculate the selection gradients using glam
 #' mod1 <- glam(w, z, "gaussian")
 #'
-#' # Review the summary statistics
-#' summary.glam(mod1)
+#' # Review the summary statistics for the linear gradients
+#' summary.glam(mod1$GL)
 #' @export
 
 # Need to add an option where the selection gradients are from a LM and the test statistics are from the Log Reg
@@ -73,11 +73,11 @@ glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep
 	if (fitType=="gaussian" && isTRUE(JS))
 		stop("Janzen and Stern (JS) correction only applicable to binomial response types. Change fitType to binomial")
 
-	if (round(colMeans(z),6)==0 && sapply(z, FUN=function(x) sd(x))==1 && isTRUE(prep))
+	if (round(colMeans(z),6)==0 && sapply(z, FUN=function(x) sd(x))==1 && prep==TRUE)
 		warning("z data seem to be standardized to mean of zero and unit variance already. Consider setting 'prep' to FALSE and re-run glam model.")
 
 	if (!round(colMeans(z),6)==0 && !sapply(z, FUN=function(x) sd(x))==1 && prep==FALSE)
-		warning("z data are not standardized to mean of zero and unit variance. Results may not be reliable.")
+		warning("z data are not standardized to mean of zero and unit variance. Results may not be comparable to other published selection gradients.")
 
 	# Creating function that will generate data for quadratic and correlational selection using
 	# squared terms and cross-products, in addition to linear terms
@@ -161,10 +161,12 @@ glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep
 		GNL <- glm(as.formula(NLM), data = dL, family = "binomial")
 		JS.Correct.L <- mean(GL$fitted.values*(1-GL$fitted.values))
 		JS.Correct.NL <- mean(GNL$fitted.values*(1-GNL$fitted.values))
+		# JS.Correct.NL <- mean(GNL$fitted.values*(1-GNL$fitted.values)^2) # Squaring it is my modification from J&S
 		GL$coefficientsorig <- GL$coefficients
 		GNL$coefficientsorig <- GNL$coefficients
 		GL$coefficients[-1] <- GL$coefficients[-1]*sds[1:length(z)]*JS.Correct.L/mean(fitness)
-		GNL$coefficients[-1] <- GNL$coefficients[-1]*JS.Correct.NL*sds*JS.Correct.NL/mean(fitness)
+		#GNL$coefficients[-1] <- GNL$coefficients[-1]*JS.Correct.NL*sds*JS.Correct.NL/mean(fitness)
+		GNL$coefficients[-1] <- GNL$coefficients[-1]*sds*JS.Correct.NL/mean(fitness)
 	}
 
 	# Standardizing the beta coefficients
