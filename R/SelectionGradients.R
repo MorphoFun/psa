@@ -26,7 +26,7 @@
 #'
 #' @usage glam(w, z, wType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
 #'
-#' @param \code{fitness} Fitness measure. Gaussian fitness types should be use relative which, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)
+#' @param \code{fitness} Fitness measure. Gaussian fitness types should use relative fitness, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)
 #' @param \code{z} Phenotypic traits.
 #' @param \code{fitType} Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".
 #' @param \code{JS} Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.
