@@ -35,7 +35,7 @@
 #' @export
 
 
-dCompare <- function(w, z) {
+dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	zScale <- data.frame(scale(z), stringsAsFactors = FALSE)
 	df <- cbind(w,z)
 	dfScale <- cbind(w, zScale)
@@ -43,7 +43,9 @@ dCompare <- function(w, z) {
 		NL <- function(z) {
 		z <- z
 		z2 <- sapply(z, function(x) x^2)
-		colnames(z2) <- paste(names(z), ".Sq", sep="")
+		ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq"), colnames(z2) <- paste(names(z), ".Sq", sep=""))
+		
+		if(ncol(z) > 1) {
 		# Calculating cross-products for correlational selection
 		cp <- array(1, c(ncol(z), ncol(z),nrow(z)))
 		for (i in 1:nrow(z)) {cp[,,i] <- t(tcrossprod(as.numeric(z[i,]), as.numeric(z[i,])))}
@@ -66,29 +68,35 @@ dCompare <- function(w, z) {
 
 		# Adding those pair combination names as the column names to the data
 		colnames(cp.paircombos) <- PairComboNames
-
 		dd <- cbind(z2, cp.paircombos)
 		return(dd)
-	}
+		} else {
+      dd <- z2
+      return(dd)
+      }
+		}
+		
 	zNL <- NL(z)
 	zNLScale <- data.frame(scale(NL(z)), stringsAsFactors = FALSE)
 
 	# differential based on Covariance (Price equation)
 	dCov <- as.numeric(cov(w, z))
 	dCovScale <- as.numeric(cov(w, zScale))
-
-	# differential based on Diffs
+  
+	if (wType == "binomial") {
+	# differential based on Diffs; this is primarily useful for when you have 'before' and 'after' selection categorizations
 	zt <- colMeans(z)
-	zs <- colMeans(df[which(df$w>0),-1])
+	zs <- colMeans(df[which(df[,1]>0),-1])
 	dMean <- zs-zt
 	ztScale <- colMeans(zScale)
 	zsScale <- colMeans(scale(df[which(df$w>0),-1]))
 	dMeanScale <- zsScale-ztScale
+	}
 
 	# nonlinear selection differentials need to be corrected for directional selection; double-check that it is s^2 for quadratic selection, and crossproduct of s1*s2 for correlational selection;
 	# C = cov(w, (z-zbar)*t(z-zbar))
-	covt <- cov(z)
-	covs <- cov(df[which(df$w>0),-1])
+	# covt <- cov(z)
+	# covs <- cov(df[which(df$w>0),-1])
 
 	# differential based on regression
 	dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
@@ -96,7 +104,7 @@ dCompare <- function(w, z) {
 	dRegScale <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
 	names(dRegScale) <- names(zScale)
 
-	dAll <- rbind(dCov, dMean, dReg, dCovScale, dMeanScale, dRegScale)
-	return(dAll)
-}
+	ifelse(wType == "binomial", dAll <- rbind(dCov, dMean, dReg, dCovScale, dMeanScale, dRegScale), dAll <- rbind(dCov, dReg, dCovScale, dRegScale))
+  return(dAll)
+	}
 
