@@ -16,12 +16,13 @@
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
+#' @param \code{wType} Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".
 #'
 #' @section Value: \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
-#' @section Value: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983).
+#' @section Value: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
 #' @section Value: \code{dReg} is the selection differential calculated as the partial regression coefficient of relative fitness, \code{w}, against each individual phenotypic trait through univariate linear regressions.
 #' @section Value: \code{dCovScale} calculates the selection differential using the equation in \code{dCovScale}, but uses z data that are standardized to a mean of zero and unit variance.
-#' @section Value: \code{dMeanScale} calculates the selection differential using the equation in \code{dMeanScale}, but uses z and z* data that are standardized to a mean of zero and unit variance.
+#' @section Value: \code{dMeanScale} calculates the selection differential using the equation in \code{dMeanScale}, but uses z and z* data that are standardized to a mean of zero and unit variance. Not output for Gaussian fitness measures.
 #' @section Value: \code{dRegScale} calculates the selection differential using the equation in \code{dRegScale}, but uses z data that are standardized to a mean of zero and unit variance.
 #'
 #' @return \code{dCompare} returns a matrix of numeric values with 6 rows and X columns, where X = number of phenotpyic traits.
@@ -36,6 +37,7 @@
 
 
 dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
+  
 	zScale <- data.frame(scale(z), stringsAsFactors = FALSE)
 	df <- cbind(w,z)
 	dfScale <- cbind(w, zScale)
@@ -43,7 +45,7 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 		NL <- function(z) {
 		z <- z
 		z2 <- sapply(z, function(x) x^2)
-		ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq"), colnames(z2) <- paste(names(z), ".Sq", sep=""))
+		ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq", sep=""), colnames(z2) <- paste(names(z), ".Sq", sep=""))
 		
 		if(ncol(z) > 1) {
 		# Calculating cross-products for correlational selection
@@ -80,14 +82,38 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	zNLScale <- data.frame(scale(NL(z)), stringsAsFactors = FALSE)
 
 	# differential based on Covariance (Price equation)
-	dCov <- as.numeric(cov(w, z))
-	dCovScale <- as.numeric(cov(w, zScale))
+	if(ncol(z) > 1) {
+	  dCov_linear <- as.numeric(cov(w, z))
+	  z_dev <- sapply(z, function(x) x - mean(x))
+	  dCov_quad <- cov(w, z_dev^2)
+	  dCov_quad_scale <- cov(w, (sapply(data.frame(scale(z)), function(x) x - mean(x)))^2)
+
+	  cpdev <- array(1, c(ncol(z_dev), ncol(z_dev),nrow(z_dev)))
+	  for (i in 1:nrow(z_dev)) {cpdev[,,i] <- t(tcrossprod(as.numeric(z_dev[i,]), as.numeric(z_dev[i,])))}
+	  cpdev.empty.matrix <- matrix(1, nrow=nrow(z_dev), ncol=length(cpdev[,,1][lower.tri(cpdev[,,1])]))
+	  # Pullin the lower triangle of the cp matrix
+	  for (i in 1:nrow(z_dev)) {cpdev.empty.matrix[i,] <- cpdev[,,i][lower.tri(cpdev[,,i])]}
+	  cpdev.paircombos <- data.frame(cpdev.empty.matrix, stringsAsFactors = F)
+	  colnames(cpdev.paircombos) <- PairComboNames
+	  dCov_corr <- cov(w, cpdev.paircombos)
+	  dCov_corr_scale <- cov(w, data.frame(scale(cpdev.paircombos)))
+	  
+	} else {
+	  dCov <- as.numeric(cov(w, z))
+	  dCovScale <- as.numeric(cov(w, zScale))
+	}
+
   
 	if (wType == "binomial") {
 	# differential based on Diffs; this is primarily useful for when you have 'before' and 'after' selection categorizations
 	zt <- colMeans(z)
 	zs <- colMeans(df[which(df[,1]>0),-1])
 	dMean <- zs-zt
+	
+	dMean_stdsd <- dMean/sapply(z, function(x) sd(x))
+	
+	dMean_stdmean <- dMean/sapply(z, function(x) mean(x))
+	
 	ztScale <- colMeans(zScale)
 	zsScale <- colMeans(scale(df[which(df$w>0),-1]))
 	dMeanScale <- zsScale-ztScale
@@ -104,7 +130,7 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	dRegScale <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
 	names(dRegScale) <- names(zScale)
 
-	ifelse(wType == "binomial", dAll <- rbind(dCov, dMean, dReg, dCovScale, dMeanScale, dRegScale), dAll <- rbind(dCov, dReg, dCovScale, dRegScale))
+	ifelse(wType == "binomial", dAll <- rbind(dCov, dMean, dReg, dMean_stdsd, dMean_stdmean, dCovScale, dMeanScale, dRegScale), dAll <- rbind(dCov, dReg, dCovScale, dRegScale))
   return(dAll)
 	}
 
