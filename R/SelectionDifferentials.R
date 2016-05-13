@@ -62,6 +62,8 @@ multiprod <- function(x) {
 #' @title Comparing estimates of selection differentials
 #'
 #' @name dCompare
+#' 
+#' @description \code{dCompare} allows the user to evaluate how different methods for calculating phenotypic section differentials influence the output and, thus, the interpretation of indirect selection on phenotypic traits. 
 #'
 #' @usage dCompare(w, z)
 #'
@@ -69,12 +71,12 @@ multiprod <- function(x) {
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
 #' @param \code{wType} Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".
 #'
-#' @section Value: \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
-#' @section Value: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
-#' @section Value: \code{dReg} is the selection differential calculated as the partial regression coefficient of relative fitness, \code{w}, against each individual phenotypic trait through univariate linear regressions.
-#' @section Value: \code{dCovScale} calculates the selection differential using the equation in \code{dCovScale}, but uses z data that are standardized to a mean of zero and unit variance.
-#' @section Value: \code{dMeanScale} calculates the selection differential using the equation in \code{dMeanScale}, but uses z and z* data that are standardized to a mean of zero and unit variance. Not output for Gaussian fitness measures.
-#' @section Value: \code{dRegScale} calculates the selection differential using the equation in \code{dRegScale}, but uses z data that are standardized to a mean of zero and unit variance.
+#' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
+#' @section Output: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
+#' @section Output:  \code{dReg} is the selection differential calculated as the partial regression coefficient of relative fitness, \code{w}, against each individual phenotypic trait through univariate linear regressions.
+#' @section Output:  \code{dCovScale} calculates the selection differential using the equation in \code{dCovScale}, but uses z data that are standardized to a mean of zero and unit variance.
+#' @section Output:  \code{dMeanScale} calculates the selection differential using the equation in \code{dMeanScale}, but uses z and z* data that are standardized to a mean of zero and unit variance. Not output for Gaussian fitness measures.
+#' @section Output:  \code{dRegScale} calculates the selection differential using the equation in \code{dRegScale}, but uses z data that are standardized to a mean of zero and unit variance.
 #'
 #' @return \code{dCompare} returns a matrix of numeric values with 6 rows and X columns, where X = number of phenotpyic traits.
 #'
