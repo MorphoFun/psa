@@ -65,11 +65,11 @@ multiprod <- function(x) {
 #' 
 #' @description \code{dCompare} allows the user to evaluate how different methods for calculating phenotypic section differentials influence the output and, thus, the interpretation of indirect selection on phenotypic traits. 
 #'
-#' @usage dCompare(w, z)
+#' @usage dCompare(w, z, method = c("cov", "mean", "reg", "all"), normalize = TRUE)
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
-#' @param \code{wType} Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".
+#' @param \code{method} Method to calculate the selection differentials.
 #'
 #' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
 #' @section Output: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
@@ -89,58 +89,28 @@ multiprod <- function(x) {
 #' @export
 
 
-dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
-  
+dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = TRUE) {
+  z2 <- sapply(z, function(x) x^2)
+  ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq", sep=""), colnames(z2) <- paste(names(z), ".Sq", sep=""))
 	zScale <- data.frame(scale(z), stringsAsFactors = FALSE)
 	zScales <- data.frame(scale(df[which(df[,1]>0),-1]), stringsAsFactors = FALSE)
 	df <- cbind(w,z)
 	dfScale <- cbind(w, zScale)
 
-		NL <- function(z) {
-		z <- z
-		z2 <- sapply(z, function(x) x^2)
-		ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq", sep=""), colnames(z2) <- paste(names(z), ".Sq", sep=""))
-		
 		if(ncol(z) > 1) {
-		sds <- c(sapply(z, function(x) sd(x)), sapply(data.frame(multiprod(z)), function(x) sd(x)))  
-		  
-		# Calculating cross-products for correlational selection
-		cp <- array(1, c(ncol(z), ncol(z),nrow(z)))
-		for (i in 1:nrow(z)) {cp[,,i] <- t(tcrossprod(as.numeric(z[i,]), as.numeric(z[i,])))}
-
-		## Creating empty matrix with number of individuals as rows, and # trait pair combinations as columns
-		# Just using matrix 1 as an example in the first line to determine how many pair combinations there are
-		cp.empty.matrix <- matrix(1, nrow=nrow(z), ncol=length(cp[,,1][lower.tri(cp[,,1])]))
-		# Pullin the lower triangle of the cp matrix
-		for (i in 1:nrow(z)) {cp.empty.matrix[i,] <- cp[,,i][lower.tri(cp[,,i])]}
-		cp.paircombos <- data.frame(cp.empty.matrix, stringsAsFactors = F)
-
-		# Generating all non-repeating combinations of trait pairs (e.g., 1vs2, 1vs3, 3vs5, etc.)
-		# row 1 = column in data matrix from above
-		# row 2 = row in data matrix from above
-		PairCombos <- combn(colnames(z[,1:ncol(z)]), 2)
-
-		# Generating names of pair combinations
-		PairComboNames <- matrix( "NA", nrow=1, ncol=ncol(PairCombos))
-		for (i in 1:ncol(PairCombos)) {PairComboNames[,i] <- paste(PairCombos[1,i], "x", PairCombos[2,i])}
-
-		# Adding those pair combination names as the column names to the data
-		colnames(cp.paircombos) <- PairComboNames
-		dd <- cbind(z2, cp.paircombos)
-		return(dd)
+		  sds <- c(sapply(z, function(x) sd(x)), sapply(data.frame(multiprod(z)), function(x) sd(x)))  
+		  dd <- multiprod(z)
+		  dd_scale <- scale(multiprod(z))
+		  sds_scale <- c(sapply(zScale, function(x) sd(x)), sapply(data.frame(dd_scale), function(x) sd(x))) 
 		} else {
       dd <- z2
-      return(dd)
       }
-		}
 		
-	zNL <- NL(z)
-	zNLScale <- data.frame(scale(NL(z)), stringsAsFactors = FALSE)
 
 	# differential based on Covariance (Price equation)
 	if(ncol(z) > 1) {
 	  dCov_linear <- as.numeric(cov(w, z))
-	  dCov_linear_scale <- as.numeric(cov(w, scale(z))) 
+	  dCov_linear_scale <- as.numeric(cov(w, zScale))
 	  z_dev <- sapply(z, function(x) x - mean(x))
 	  dCov_quad <- cov(w, z_dev^2)
 	  dCov_quad_scale <- cov(w, (sapply(data.frame(scale(z)), function(x) x - mean(x)))^2)
@@ -151,21 +121,24 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	  # Pullin the lower triangle of the cp matrix
 	  for (i in 1:nrow(z_dev)) {cpdev.empty.matrix[i,] <- cpdev[,,i][lower.tri(cpdev[,,i])]}
 	  cpdev.paircombos <- data.frame(cpdev.empty.matrix, stringsAsFactors = F)
+	  PairCombos <- combn(colnames(z[,1:ncol(z)]), 2)
+	  PairComboNames <- matrix( "NA", nrow=1, ncol=ncol(PairCombos))
+	  for (i in 1:ncol(PairCombos)) {PairComboNames[,i] <- paste(PairCombos[1,i], "x", PairCombos[2,i])}
 	  colnames(cpdev.paircombos) <- PairComboNames
 	  dCov_corr <- cov(w, cpdev.paircombos)
 	  dCov_corr_scale <- cov(w, data.frame(scale(cpdev.paircombos)))
 	  dCov <- c(dCov_linear, dCov_quad, dCov_corr)
-	  dCov_scale <- c(dCov_linear_scale, dCov_quad_scale, dCov_corr_scale)
+	  dCovScale <- c(dCov_linear_scale, dCov_quad_scale, dCov_corr_scale)
 	  fullNames <- c(colnames(z), colnames(z2), PairComboNames)
-	  names(dCov) <- fullNames; names(dCov_scale) <- fullNames
-	} else {
+	  names(dCov) <- fullNames; names(dCovScale) <- fullNames
+  } else {
 	  dCov <- as.numeric(cov(w, z))
 	  dCovScale <- as.numeric(cov(w, zScale))
 	}
 
 	  
-	if (wType == "binomial") {
-	# differential based on Diffs; this is primarily useful for when you have 'before' and 'after' selection categorizations
+	if (length(levels(as.factor(w))) == 2) {
+	# differential based on taking differences between 'before' and 'after' selection events
 	  if(ncol(z) > 1) {
 	    zt <- colMeans(z)
 	    zs <- colMeans(df[which(df[,1]>0),-1])
@@ -192,10 +165,12 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	    dMean_corr_scale <- covzs_scale[lower.tri(covzs_scale)] - covzt_scale[lower.tri(covzt_scale)] + tcrossprod(dMean_linear_scale)[lower.tri(tcrossprod(dMean_linear_scale))]
 	    
 	    dMean <- c(dMean_linear, dMean_quad, dMean_corr)
+	    names(dMean) <- fullNames
 	    dMean_stdsd <- dMean/sds
 	    dMean_stdmean <- dMean/(c(colMeans(z), colMeans(multiprod(z))))
 	    
 	    dMeanScale <- c(dMean_linear_scale, dMean_quad_scale, dMean_corr_scale)
+	    names(dMeanScale) <- fullNames
 	    
 	  } else {
 	    zt <- colMeans(z)
@@ -218,12 +193,23 @@ dCompare <- function(w, z, wType = c("gaussian", "binomial")) {
 	# covs <- cov(df[which(df$w>0),-1])
 
 	# differential based on regression
-	dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
-	names(dReg) <- names(z)
-	dRegScale <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
-	names(dRegScale) <- names(zScale)
+	if(ncol(z) > 1) {
+	  dReg_linear <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
+	  names(dReg_linear) <- names(z)
+	  dRegScale_linear <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
+	  names(dRegScale_linear) <- names(zScale)
+	  
+	  dReg_nonlinear <- 
+	  
+	} else {
+	  dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
+	  names(dReg) <- names(z)
+	  dRegScale <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
+	  names(dRegScale) <- names(zScale)
+	}
 
-	ifelse(wType == "binomial", dAll <- rbind(dCov, dMean, dReg, dMean_stdsd, dMean_stdmean, dCovScale, dMeanScale, dRegScale), dAll <- rbind(dCov, dReg, dCovScale, dRegScale))
+
+	ifelse(length(levels(as.factor(w))) == 2, dAll <- rbind(dCov, dMean, dReg, dMean_stdsd, dMean_stdmean, dCovScale, dMeanScale, dRegScale), dAll <- rbind(dCov, dReg, dCovScale, dRegScale))
   return(dAll)
 	}
 
