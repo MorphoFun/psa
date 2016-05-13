@@ -24,9 +24,10 @@ I_total <- function(fitness, type = c("W", "w")) {
 
 #' @examples
 # load the dataset
-data(BumpusMales)
+#data(BumpusMales)
+
 # Calculate the total opportunity for selection
-I_total(BumpusMales$W, type = "W")
+# I_total(BumpusMales$W, type = "W")
 
 
 

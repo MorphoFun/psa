@@ -4,14 +4,14 @@
 \alias{glam}
 \title{Calculating gradients based on the Lande-Arnold Method}
 \usage{
-glam(w, z, wType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
+glam(w, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
 }
 \arguments{
-\item{\code{fitness}}{Fitness measure. Gaussian fitness types should be use relative which, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)}
+\item{\code{fitness}}{Fitness measure. Gaussian fitness types should use relative fitness, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)}
 
 \item{\code{z}}{Phenotypic traits.}
 
-\item{\code{fitType}}{Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".}
+\item{\code{fitType}}{Type of distribution for the fitness metric. Option to either "gaussian" or "binomial".}
 
 \item{\code{JS}}{Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.}
 
@@ -38,7 +38,7 @@ The Lande-Arnold Method is based on the 1983 paper by Russell Lande and Stevan A
  \strong{These analyses are currently only available for longitudinal data}. Selection gradients for cross-sectional data must be evalated using matrix algebra rather than OLS regressions (Lande and Arnold 1983).
 }
 \examples{
-# use the BumpusMales data set from the tremors package
+# use the BumpusMales data set
 data(BumpusMales)
 
 # Define the input
@@ -48,8 +48,8 @@ z <- BumpusMales[,3:11]
 # Calculate the selection gradients using glam
 mod1 <- glam(w, z, "gaussian")
 
-# Review the summary statistics
-summary.glam(mod1)
+# Review the summary statistics for the linear gradients
+summary.glam(mod1$GL)
 }
 \references{
 Janzen FJ, Stern HL. 1998. Logistic regression for empirical studies of multivariate selection. \emph{Evolution} 52(6): 1564-1571. \url{http://www.jstor.org/stable/2411330?seq=1#page_scan_tab_contents}
@@ -59,6 +59,6 @@ Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters.
 Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
 }
 \seealso{
-\code{glamx}, \code{glm}, \code{lm}, \code{summary.blam}, \code{glmer}
+\code{glamx}, \code{glm}, \code{lm}, \code{summary.glam}, \code{glmer}
 }
 

@@ -24,11 +24,11 @@
 #' @name glam
 #' @description \code{glam} is used to fit generalized linear models, specified by error distributions and link functions as denoted by \code{family}, using approaches based on the quantitative framework established by Lande and Arnold (1983). Statistical methods are based on \code{glm} for linear models and \code{glmer} for linear mixed effects models. An option to employ the Janzen and Stern (1998) correction factor for logistic regression models is available via \code{JS = TRUE}. Model formulae are constructed such that regression coefficients and standard errors for quadratic terms do NOT need to be doubled (Stinchcombe et al. 2008)
 #'
-#' @usage glam(w, z, wType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
+#' @usage glam(w, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
 #'
 #' @param \code{fitness} Fitness measure. Gaussian fitness types should use relative fitness, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)
 #' @param \code{z} Phenotypic traits.
-#' @param \code{fitType} Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".
+#' @param \code{fitType} Type of distribution for the fitness metric. Option to either "gaussian" or "binomial".
 #' @param \code{JS} Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.
 #' @param \code{prep} Option to scale the phenotypic trait data (\code{z}) to a mean of zero and unit variance in preparation for running regression models. Default is set to \code{TRUE}, with the assumption that \code{z} are the raw data for the morphological traits.
 #' @param \code{st} Option to standardize the regression coefficients by either the mean or the standard deviation of \code{z}.
@@ -49,7 +49,7 @@
 #'
 #' @seealso \code{glamx}, \code{glm}, \code{lm}, \code{summary.glam}, \code{glmer}
 #' @examples
-#' # use the BumpusMales data set from the tremors package
+#' # use the BumpusMales data set
 #' data(BumpusMales)
 #' 
 #' # Define the input
@@ -63,7 +63,7 @@
 #' summary.glam(mod1$GL)
 #' @export
 
-# Need to add an option where the selection gradients are from a LM and the test statistics are from the Log Reg
+# Need to add an option where the selection gradients are from a LM and the test statistics are from the Log Reg; instead of fitType, I could do method = c("LA", "JS", "LinLog")
 # Also, consider whether to log-transform data as a default? 
 
 glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL,...) {
@@ -198,14 +198,12 @@ glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep
 	return(dd)
 }
 
-# Could do it so that I query the blam and determine whether it's binomial or continuous;
-# if continuous, use summary.glm, but if binomial, need to use summary.blam
+# Could do it so that I query the glam model and determine whether it's binomial or continuous;
+# if continuous, use summary.glm, but if binomial, need to use summary.glam
 # Should also verify that summary.glm foundation is okay to use for calculating parameters (e.g., se)
 # for nonlinear models
-# Is it confusing that the linear terms in nonlinear Comparisons are from the linear models?
 
 ## Need to update/double-check glamx, so that it is congruent with glam and usable with summary.glam
-####### NEED TO WRITE DOCUMENTATION FOR GLAMX ######
 
 #' @title Comparison of selection gradients with different trait choices
 #'

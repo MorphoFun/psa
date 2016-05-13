@@ -7,7 +7,9 @@
 summary.glam(object, JS = FALSE, dispersion = NULL, correlation = FALSE, symbolic.cor = FALSE, ...)
 }
 \arguments{
-\item{\code{object}}{}
+\item{\code{object}}{Object of the class 'glam'.}
+
+\item{\code{JS}}{Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.}
 }
 \description{
 \code{summary.glam} provides the summary information for class \code{glam, glm} or \code{lm}. Output is similar to \code{summary}, except that an option to apply the Janzen and Stern (1998) correction for logistic regressions is available in \code{summary.glam}.
@@ -27,5 +29,8 @@ Janzen FJ, Stern HL. 1998. Logistic regression for empirical studies of multivar
 Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 
 Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
+}
+\seealso{
+\code{glam}, \code{summary}
 }
 
