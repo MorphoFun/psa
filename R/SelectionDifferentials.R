@@ -199,7 +199,12 @@ dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = 
 	  dRegScale_linear <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
 	  names(dRegScale_linear) <- names(zScale)
 	  
-	  dReg_nonlinear <- 
+	  dReg_quad <- sapply(z, function(x) lm(w ~ x + I(0.5*x^2), data = z)$coefficients[3])
+	  names(dReg_quad) <- colnames(z2)
+	  dRegScale_quad <- sapply(zScale, function(x) lm(w ~ x + I(0.5*x^2), data = zScale)$coefficients[3])
+	  names(dRegScale_quad) <- colnames(z2)
+	  
+	  dReg_corr <- 
 	  
 	} else {
 	  dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
