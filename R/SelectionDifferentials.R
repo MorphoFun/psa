@@ -204,7 +204,27 @@ dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = 
 	  dRegScale_quad <- sapply(zScale, function(x) lm(w ~ x + I(0.5*x^2), data = zScale)$coefficients[3])
 	  names(dRegScale_quad) <- colnames(z2)
 	  
-	  dReg_corr <- 
+	  PairCombos <- combn(colnames(z[,1:ncol(z)]), 2)
+	  corrmod <- list()
+	  for (i in 1:ncol(PairCombos)) {
+	    corrmod[i] <- paste("w ~", PairCombos[1,i], "*", PairCombos[2,i])
+	  }
+	  
+	  dReg_corrmods <- list()
+	  for (j in 1:length(corrmod)) {
+	    dReg_corrmods[[j]] <-  lm(as.formula(corrmod[[j]]), data = df) 
+	  }
+	  dReg_corr <- sapply(dReg_corrmods, function(x) c(x$coefficients[4]))
+	  dReg <- c(dReg_linear, dReg_quad, dReg_corr) 
+	  names(dReg) <- fullNames
+	  
+	  dRegScale_corrmods <- list()
+	  for (j in 1:length(corrmod)) {
+	    dRegScale_corrmods[[j]] <-  lm(as.formula(corrmod[[j]]), data = dfScale) 
+	  }
+	  dRegScale_corr <- sapply(dReg_corrmods_scale, function(x) c(x$coefficients[4]))
+	  dRegScale <- c(dRegScale_linear, dRegScale_quad, dRegScale_corr) 
+	  names(dRegScale) <- fullNames
 	  
 	} else {
 	  dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
