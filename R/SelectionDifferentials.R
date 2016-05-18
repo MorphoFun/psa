@@ -39,13 +39,13 @@ multiprod <- function(x) {
     
     # Generating names of pair combinations
     PairComboNames <- matrix( "NA", nrow=1, ncol=ncol(PairCombos))
-    for (i in 1:ncol(PairCombos)) {PairComboNames[,i] <- paste(PairCombos[1,i], "x", PairCombos[2,i])}
+    for (i in 1:ncol(PairCombos)) {PairComboNames[,i] <- paste(PairCombos[1,i], " x ", PairCombos[2,i], sep = "")}
     
     # Adding those pair combination names as the column names to the data
     colnames(cp.paircombos) <- PairComboNames
-    dd <- data.frame(x2, cp.paircombos, stringsAsFactors = FALSE)
+    dd <- cbind(x2, cp.paircombos)
   } else {
-    dd <- data.frame(x2, stringsAsFactors = FALSE)
+    dd <- x2
   }
     return(dd)
 }
@@ -72,7 +72,7 @@ multiprod <- function(x) {
 #' @param \code{method} Method to calculate the selection differentials.
 #'
 #' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
-#' @section Output: \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
+#' @section Output:  \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
 #' @section Output:  \code{dReg} is the selection differential calculated as the partial regression coefficient of relative fitness, \code{w}, against each individual phenotypic trait through univariate linear regressions.
 #' @section Output:  \code{dCovScale} calculates the selection differential using the equation in \code{dCovScale}, but uses z data that are standardized to a mean of zero and unit variance.
 #' @section Output:  \code{dMeanScale} calculates the selection differential using the equation in \code{dMeanScale}, but uses z and z* data that are standardized to a mean of zero and unit variance. Not output for Gaussian fitness measures.
@@ -87,7 +87,6 @@ multiprod <- function(x) {
 #'
 #' dCompare(BumpusMales$w, BumpusMales[,3:11])
 #' @export
-
 
 dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = TRUE) {
   z2 <- sapply(z, function(x) x^2)
