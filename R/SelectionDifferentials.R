@@ -136,8 +136,19 @@ dCompare <- function(w, z) {
 	  fullNames <- c(colnames(z), colnames(z2), PairComboNames)
 	  names(dCov) <- fullNames; names(dCovScale) <- fullNames
   } else {
-	  dCov <- as.numeric(cov(w, z))
-	  dCovScale <- as.numeric(cov(w, zScale))
+	  dCov_linear <- as.numeric(cov(w, z))
+	  dCov_linear_scale <- as.numeric(cov(w, zScale))
+	  
+	  z_dev <- sapply(z, function(x) x - mean(x))
+	  dCov_quad <- cov(w, z_dev^2)
+	  dCov_quad_scale <- cov(w, (sapply(data.frame(scale(z)), function(x) x - mean(x)))^2)
+	  
+	  dCov <- c(dCov_linear, dCov_quad)
+	  names(dCov) <- c(colnames(z), paste(colnames(z), "^2", sep = ""))
+	 
+	  dCovScale <- c(dCov_linear_scale, dCov_quad_scale)
+	  names(dCovScale) <- c(colnames(zScale), paste(colnames(zScale), "^2", sep = ""))             
+	                   
 	}
 
 	  
@@ -183,13 +194,31 @@ dCompare <- function(w, z) {
 	  } else {
 	    zt <- colMeans(z)
 	    zs <- mean(df[which(df[,1]>0),-1])
-	    dMean <- zs-zt
-	    
-	    dMean_stdsd <- dMean/sapply(z, function(x) sd(x))
+	    dMean_linear <- zs-zt
 	    
 	    ztScale <- colMeans(zScale)
-	    zsScale <- colMeans(scale(df[which(df$w>0),-1]))
-	    dMeanScale <- zsScale-ztScale
+	    zsScale <- colMeans(zScales)
+	    dMean_linear_scale <- zsScale-ztScale
+	    
+	    varzt <- var(z)
+	    varzs <- var(df[which(df[,1]>0),-1])
+	    dMean_quad <- varzs - varzt + dMean_linear^2 
+	    
+	    varzt_scale <- var(zScale)
+	    varzs_scale <- var(zScales)
+	    dMean_quad_scale <- varzs_scale - varzt_scale + dMean_linear_scale^2 
+	    
+	    dMean <- c(dMean_linear, dMean_quad)
+	    names(dMean) <- c(colnames(z), paste(colnames(z), "^2", sep = ""))
+	    
+	    dMeanScale <- c(dMean_linear_scale, dMean_quad_scale)
+	    names(dMeanScale) <- c(colnames(z), paste(colnames(z), "^2", sep = ""))
+	   
+	    dMean_stdsd_linear <- (zs-zt)/zt
+	    dMean_stdsd_quad <- ((varzs - varzt)/varzt) + dMean_stdsd_linear^2
+	    dMean_stdsd <- c(dMean_stdsd_linear, dMean_stdsd_quad)
+	    names(dMean_stdsd) <- names(dMeanScale)
+	                           
 	  }
 	}
 
@@ -230,10 +259,21 @@ dCompare <- function(w, z) {
 	  names(dRegScale) <- fullNames
 	  
 	} else {
-	  dReg <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
-	  names(dReg) <- names(z)
-	  dRegScale <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
-	  names(dRegScale) <- names(zScale)
+	  dReg_linear <- sapply(z, function(x) lm(w ~ x, data = z)$coefficients[2])
+	  names(dReg_linear) <- names(z)
+	  dRegScale_linear <- sapply(zScale, function(x) lm(w ~ x, data = zScale)$coefficients[2])
+	  names(dRegScale_linear) <- names(zScale)
+	  
+	  dReg_quad <- sapply(z, function(x) lm(w ~ x + I(x^2), data = z)$coefficients[3])
+	  names(dReg_quad) <- colnames(z2)
+	  dRegScale_quad <- sapply(zScale, function(x) lm(w ~ x + I(x^2), data = zScale)$coefficients[3])
+	  names(dRegScale_quad) <- colnames(z2)
+	  
+	  dReg <- c(dReg_linear, dReg_quad)
+	  names(dReg) <- c(colnames(z), paste(colnames(z), "^2", sep = ""))
+	  
+	  dRegScale <- c(dRegScale_linear, dRegScale_quad)
+	  names(dRegScale) <- c(colnames(z), paste(colnames(z), "^2", sep = ""))
 	}
 
 
