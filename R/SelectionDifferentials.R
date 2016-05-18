@@ -88,12 +88,15 @@ multiprod <- function(x) {
 #' dCompare(BumpusMales$w, BumpusMales[,3:11])
 #' @export
 
-dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = TRUE) {
+dCompare <- function(w, z) {
+  z <- data.frame(z, stringsAsFactors = FALSE)
   z2 <- sapply(z, function(x) x^2)
   ifelse(ncol(z) > 1, colnames(z2) <- paste(names(z), ".Sq", sep=""), colnames(z2) <- paste(names(z), ".Sq", sep=""))
+	df <- cbind(w,z)
+	
 	zScale <- data.frame(scale(z), stringsAsFactors = FALSE)
 	zScales <- data.frame(scale(df[which(df[,1]>0),-1]), stringsAsFactors = FALSE)
-	df <- cbind(w,z)
+	
 	dfScale <- cbind(w, zScale)
 
 		if(ncol(z) > 1) {
@@ -173,7 +176,7 @@ dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = 
 	    
 	  } else {
 	    zt <- colMeans(z)
-	    zs <- colMeans(df[which(df[,1]>0),-1])
+	    zs <- mean(df[which(df[,1]>0),-1])
 	    dMean <- zs-zt
 	    
 	    dMean_stdsd <- dMean/sapply(z, function(x) sd(x))
@@ -187,9 +190,6 @@ dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = 
 	}
 
 	# nonlinear selection differentials need to be corrected for directional selection; double-check that it is s^2 for quadratic selection, and crossproduct of s1*s2 for correlational selection;
-	# C = cov(w, (z-zbar)*t(z-zbar))
-	# covt <- cov(z)
-	# covs <- cov(df[which(df$w>0),-1])
 
 	# differential based on regression
 	if(ncol(z) > 1) {
@@ -221,7 +221,7 @@ dCompare <- function(w, z, method = c("cov", "mean", "ols", "all"), normalize = 
 	  for (j in 1:length(corrmod)) {
 	    dRegScale_corrmods[[j]] <-  lm(as.formula(corrmod[[j]]), data = dfScale) 
 	  }
-	  dRegScale_corr <- sapply(dReg_corrmods_scale, function(x) c(x$coefficients[4]))
+	  dRegScale_corr <- sapply(dRegScale_corrmods, function(x) c(x$coefficients[4]))
 	  dRegScale <- c(dRegScale_linear, dRegScale_quad, dRegScale_corr) 
 	  names(dRegScale) <- fullNames
 	  
