@@ -281,3 +281,70 @@ dCompare <- function(w, z) {
   return(dAll)
 	}
 
+
+#### Calculating the selection differentials, using the covariance method
+#' @title Estimating linear and nonlinear selection differentials
+#'
+#' @name dCov
+#' 
+#' @description \code{dCov} estimates the linear and nonlinear selection differentials for one or more phenotypic traits, based on descriptions in Phillips and Arnold (1989). Estimations are based on phenotypic traits that have been normalized to a mean of zero and unit variance. If one phenotypic trait is input, linear and quadratic selection differentials will be output. If more than one phenotypic trait is input, correlational selection differentials will also be output.
+#'
+#' @usage dCov(w, z)
+#'
+#' @param \code{w} Relative fitness.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted.
+#'
+#' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z}, using the approach described in Table 1 of Phillips and Arnold (1989).
+#'
+#' @return \code{dCov} returns a vector of numeric values. 
+#'
+#' @references Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222. \url{http://people.oregonstate.edu/~arnoldst/pdf_files/Phillips%20&%20Arnold%201989.pdf}
+#' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
+#'
+#' @examples
+#' data(BumpusMales)
+#'
+#' dCov(BumpusMales$w, BumpusMales[,3:11])
+#' @export
+
+
+# differential based on Covariance (Price equation)
+
+dCov <- function(w, z) {
+  
+  isScale <- function(x) {
+    ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
+    if (is.vector(x) == TRUE) {
+      ifelse(round(mean(x),6)==0 && sd(x)==1, "TRUE", "FALSE")
+    } else {
+      ifelse(round(colMeans(x),6)==0 && sapply(x, FUN=function(x) sd(x))==1, "TRUE", "FALSE")
+    }
+  }
+  
+  ifelse(isScale(z) == TRUE, z <- z, z <- data.frame(scale(z), stringsAsFactors = FALSE))
+  
+  d <- cbind(w, z)  
+
+  if(ncol(d) > 2) {
+    dCov_linear <- as.numeric(cov(w, z))
+    
+    z_dev <- sapply(z, function(x) x - mean(x))
+    dCov_nonlinear <- cov(w, multiprod(z_dev))
+    
+    
+    differentials <- c(dCov_linear, dCov_nonlinear)
+    fullNames <- c(colnames(z), colnames(dCov_nonlinear))
+    names(differentials) <- fullNames
+    
+  } else {
+    dCov_linear <- as.numeric(cov(w, z))
+    
+    z_dev <- sapply(z, function(x) x - mean(x))
+    dCov_quad <- cov(w, z_dev^2)
+
+    differentials <- c(dCov_linear, dCov_quad)
+    names(differentials) <- c("z", "z^2")
+  }
+  return(differentials)
+}
+
