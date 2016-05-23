@@ -85,7 +85,7 @@ I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
   n = ncol(z)
   for (i in 1:n) {z[is.na(z[,i]),i] = means[i]}
   model.B.lin = lm(w ~ ., data = z, weights = wt)
-
+  qq <- list()
   for (i in 1:length(z)) {
     qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep="")
     QT <- paste(unlist(qq), collapse=" + ", sep=" + ")
