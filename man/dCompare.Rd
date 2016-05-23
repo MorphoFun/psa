@@ -10,11 +10,9 @@ dCompare(w, z)
 \item{\code{w}}{Relative fitness.}
 
 \item{\code{z}}{Phenotypic trait(s). Character values are not accepted.}
-
-\item{\code{wType}}{Type of distribution for relative fitness \code{w}. Option to either "gaussian" or "binomial".}
 }
 \value{
-\code{dCompare} returns a matrix of numeric values with 6 rows and X columns, where X = number of phenotpyic traits.
+\code{dCompare} returns a matrix of numeric values with 7 rows and X columns, where X = number of phenotpyic traits.
 }
 \description{
 \code{dCompare} allows the user to evaluate how different methods for calculating phenotypic section differentials influence the output and, thus, the interpretation of indirect selection on phenotypic traits.
@@ -22,7 +20,9 @@ dCompare(w, z)
 \section{Output}{
   \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
 
- \code{dMean} is the selection differential calculated as mean(z*) - mean(z), where z* is the phenotypic trait before selection and z is the phenotypic trait after selection (Lande and Arnold 1983). Not output for Gaussian fitness measures.
+  \code{dMean} is the selection differential calculated as  as described in Brodie et al. (1995). Not output for Gaussian fitness measures.
+
+  \code{dMean_stdsd} is the selection differential calculated as described in Gvoždík and Smolinský (2015). Not output for Gaussian fitness measures.
 
   \code{dReg} is the selection differential calculated as the partial regression coefficient of relative fitness, \code{w}, against each individual phenotypic trait through univariate linear regressions.
 
@@ -38,6 +38,10 @@ data(BumpusMales)
 dCompare(BumpusMales$w, BumpusMales[,3:11])
 }
 \references{
+Brodie III ED, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. \emph{Trends in Ecology and Evolution} 10(8): 313-318. \url{http://www.sciencedirect.com/science/article/pii/S016953470089117X}
+
+Gvoždík L, Smolinský R. 2015. Body size, swimming speed, or thermal sensitivity? Predator-imposed selection on amphibian larvae. \emph{BMC Evolutionary Biology} 15: 238. \url{http://bmcevolbiol.biomedcentral.com/articles/10.1186/s12862-015-0522-y}
+
 Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 }
 

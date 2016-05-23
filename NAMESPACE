@@ -3,6 +3,7 @@
 S3method(summary,glam)
 export(I_total)
 export(dCompare)
+export(dCov)
 export(glam)
 export(glamx)
 export(multiprod)
