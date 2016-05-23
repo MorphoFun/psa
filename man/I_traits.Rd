@@ -4,27 +4,27 @@
 \alias{I_traits}
 \title{Partitioning the opportunity for selection due to individual phenotypic traits}
 \usage{
-I_traits(z, fitness, type = c("W", "w"))
+I_traits(z, fitness, fitType = c("rel", "abs"))
 }
 \arguments{
 \item{\code{z}}{Phenotypic traits.}
 
 \item{\code{fitness}}{Vector of numeric or integer values that represent the fitness metric or proxy.}
 
-\item{\code{type}}{Type of fitness metric or proxy, either absolute fitness (\code{"W"}) or relative fitness (\code{"w"}).}
+\item{\code{fitType}}{Type of fitness metric or proxy, either absolute fitness (\code{"W"}) or relative fitness (\code{"w"}).}
 }
 \value{
 \code{I_traits} returns a matrix of numeric values. 
 
-\itemize {
-   \code{B} A vector of selection gradients (normalized to mean of zero and unit variance)
-   \code{b} slope of a simple linear regression of relative fitness against an individual phenotypic trait.
-   \code{q} Weights to be applied to the phenotypic traits (defaults to 1).
-   \code{var} Imputed variance due to missing data, divided by the weight.
-   \code{s} A vector of selection differentials (normalized to mean of zero and unit variance)
-   \code{i} Additive opportunity for selection for an individual phenotypic trait. 
-   \code{I.model} Opportunity of selection, based on the model of phenotypic traits given. 
-   \code{I.total} The total opportunity for selection, based on weighted variance of fitness.
+\itemize{
+   \item \code{B:} A vector of selection gradients (normalized to mean of zero and unit variance)
+   \item \code{b:} slope of a simple linear regression of relative fitness against an individual phenotypic trait.
+   \item \code{q:} Weights to be applied to the phenotypic traits (defaults to 1).
+   \item \code{var:} Imputed variance due to missing data, divided by the weight.
+   \item \code{s:} A vector of selection differentials (normalized to mean of zero and unit variance)
+   \item \code{i:} Additive opportunity for selection for an individual phenotypic trait. 
+   \item \code{I.model:} Opportunity of selection, based on the model of phenotypic traits given. 
+   \item \code{I.total:} The total opportunity for selection, based on weighted variance of fitness.
 }
 }
 \description{
