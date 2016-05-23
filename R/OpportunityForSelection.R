@@ -63,7 +63,7 @@ I_total <- function(fitness, type = c("W", "w")) {
 
 I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
   ifelse(fitType == "rel", w <- fitness, w <- fitness/mean(fitness))
-  ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, nrow(z)))
+  ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, length(z)))
 
   nonlinz <- data.frame(scale(multiprod(z)), stringsAsFactors = FALSE)
 
