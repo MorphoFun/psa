@@ -2,9 +2,12 @@
 
 S3method(summary,glam)
 export(I_total)
+export(I_traits)
 export(dCompare)
 export(dCov)
 export(glam)
 export(glamx)
 export(multiprod)
 export(readGitHub)
+import(corpcor)
+import(matrixStats)

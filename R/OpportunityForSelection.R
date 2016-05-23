@@ -18,16 +18,16 @@
 #'
 #' @export
 I_total <- function(fitness, type = c("W", "w")) {
-	I_tot <- ifelse(type=="w", var(fitness), var(fitness/mean(fitness)))
-	return(I_tot)
+	ifelse(type=="w", w <- fitness, w <- fitness/mean(fitness))
+	var(w)
 }
 
 #' @examples
-# load the dataset
-#data(BumpusMales)
+#' # load the dataset
+#' data(BumpusMales)
 
-# Calculate the total opportunity for selection
-# I_total(BumpusMales$W, type = "W")
+#' # Calculate the total opportunity for selection
+#' I_total(BumpusMales$W, type = "W")
 
 
 
@@ -35,7 +35,7 @@ I_total <- function(fitness, type = c("W", "w")) {
 #'
 #' @name I_traits
 #'
-#' @description Calculation of the opportunity for selection based on the method provided by Moorad and Wade (2013), in which the variation in fitness due to a given trait can be calculated as the product of its selection gradient and selection differential. The I_traits function was written using the code provided in the supplementary material of Moorad and Wade (2013), with slight modifications including a slight correction to  s = b * q * unimputed.var rather than s = B * q * unimputed.var. The I_traits function also automatically mean-centers the phenotypic traits. 
+#' @description Calculation of the opportunity for selection based on the method provided by Moorad and Wade (2013), in which the variation in fitness due to a given trait can be calculated as the product of its selection gradient and selection differential. The I_traits function was written using the code provided in the supplementary material of Moorad and Wade (2013), with slight modifications including a slight correction to  s = b * q * unimputed.var rather than s = B * q * unimputed.var. In addition, the original method by Moorad and Wade (2013) estimated the selection differentials using simple linear regressions that could incorporate weights, but \code{I_traits} estimates the selection differentials using the covariance method (Phillips and Arnold 1983) that does not incorporate weights. The \code{I_traits} function also automatically mean-centers the phenotypic traits. 
 #' 
 #' @usage I_traits(z, fitness, type = c("W", "w"))
 #'
@@ -43,7 +43,7 @@ I_total <- function(fitness, type = c("W", "w")) {
 #' @param \code{fitness} Vector of numeric or integer values that represent the fitness metric or proxy.
 #' @param \code{type} Type of fitness metric or proxy, either absolute fitness (\code{"W"}) or relative fitness (\code{"w"}).
 #'
-#' @return \code{I_traits} returns a vector of numeric values. 
+#' @return \code{I_traits} returns a matrix of numeric values. 
 #' 
 #' \itemize {
 #'    \code{B} A vector of selection gradients (normalized to mean of zero and unit variance)
@@ -55,73 +55,64 @@ I_total <- function(fitness, type = c("W", "w")) {
 #'    \code{I.model} Opportunity of selection, based on the model of phenotypic traits given. 
 #'    \code{I.total} The total opportunity for selection, based on weighted variance of fitness.
 #' }
-#' @references Moorad JA, Wade MJ. 1984. Selection gradients, the opportunity for selection, and the coefficient of determination. \emph{The American Naturalist} 181(3): 291-300. \url{http://www.journals.uchicago.edu/doi/abs/10.1086/669158}
+#' @references Moorad JA, Wade MJ. 2013. Selection gradients, the opportunity for selection, and the coefficient of determination. \emph{The American Naturalist} 181(3): 291-300. \url{http://www.journals.uchicago.edu/doi/abs/10.1086/669158}
+#' @references Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222. \url{http://www.jstor.org/stable/2409357}
 #' @import matrixStats
 #' @import corpcor
+#' @export
 
-#' require(matrixStats) # for colWeightedMeans
-#' require(corpcor) # for wt.moments
-#' I_traits<-function(z, fitness, wType = c("rel", "abs"), wt = NULL){
-#'   ifelse(wType == "rel", w <- fitness, w <- fitness/mean(fitness))
-#'   ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, nrow(z)))
-#'   z = data.frame(scale(z), stringsAsFactors = FALSE)
-#'   q = colWeightedMeans(!is.na(z), w=wt)
-#'   means = colWeightedMeans(as.matrix(z), w=wt, na.rm = TRUE)
-#'   n = ncol(z)
-#'   for (i in 1:n) {z[is.na(z[,i]),i] = means[i]}
-#'   model.B = lm(w ~ ., data = z, weights = wt)
-#'   B = model.B$coef[-1]
-#'   X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
-#'   p = summary(lm(w ~ ., data = z, weights = wt))$coef[-1,4]
-#'   for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
-#'   b = rep(0,n)
-#'   for (i in 1:n) {
-#'     model = lm( w ~ z[,i], weights = wt)
-#'     b[i] = model$coef[-1]
-#'   }
-#'   imputed.var = NULL
-#'   for (i in 1:n) {imputed.var = c(imputed.var,wt.moments(z[,i], w = wt)$var)}
-#'   unimputed.var = imputed.var/q
-#'   data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b,
-#'              I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var)}
-#' 
-#' #' @examples 
-#' #' 
-#' 
+I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
+  ifelse(fitType == "rel", w <- fitness, w <- fitness/mean(fitness))
+  ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, nrow(z)))
+
+  nonlinz <- data.frame(scale(multiprod(z)), stringsAsFactors = FALSE)
+
+  isScale <- function(x) {
+    ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
+    if (is.vector(x) == TRUE) {
+      ifelse(round(mean(x),6)==0 && sd(x)==1, "TRUE", "FALSE")
+    } else {
+      ifelse(round(colMeans(x),6)==0 && sapply(x, FUN=function(x) sd(x))==1, "TRUE", "FALSE")
+    }
+  }
+
+  ifelse(isScale(z) == TRUE, z <- z, z <- data.frame(scale(z), stringsAsFactors = FALSE))
+
+  totalz <- cbind(z, nonlinz)
+
+  q = colWeightedMeans(!is.na(totalz), w=wt)
+  means = colWeightedMeans(as.matrix(totalz), w=wt, na.rm = TRUE)
+  n = ncol(z)
+  for (i in 1:n) {z[is.na(z[,i]),i] = means[i]}
+  model.B.lin = lm(w ~ ., data = z, weights = wt)
+
+  for (i in 1:length(z)) {
+    qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep="")
+    QT <- paste(unlist(qq), collapse=" + ", sep=" + ")
+    NLM <- paste("w ~ ", paste(names(z), collapse=" + "), " + ", QT, " + ", ".:.")
+  }
+  model.B.nonlin <- lm(as.formula(NLM), data = z, weights = wt)
+
+  B = c(model.B.lin$coef[-1], model.B.nonlin$coefficients[-c(1:(n+1))])
+
+  X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
+  p = c(summary(model.B.lin)$coefficients[-1,4], summary(model.B.nonlin)$coefficients[-1,4])
+  for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
+
+  b <- dCov(w, z)
+
+  imputed.var = NULL
+
+  for (i in 1:ncol(totalz)) {imputed.var = c(imputed.var,wt.moments(totalz[,i], w = wt)$var)}
+  unimputed.var = imputed.var/q
+  data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b,
+             I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var)}
+
+#' @examples
+#'
+
 #' # load the dataset
 #' data(BumpusMales)
-#' 
+
 #' # Calculate the opportunity for selection for the total variation in fitness and variation from phenotypic traits
 #' I_traits(BumpusMales[,3:11], BumpusMales$w, fitType = "rel")
-#' 
-#' 
-#' I_traits<-function(z, fitness, wType = c("rel", "abs"), wt = NULL, ...){
-#'   ifelse(wType == "rel", w <- fitness, w <- fitness/mean(fitness))
-#'   ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, nrow(z)))
-#'   z = data.frame(scale(z), stringsAsFactors = FALSE)
-#'   q = colWeightedMeans(!is.na(z), w=wt)
-#'   means = colWeightedMeans(as.matrix(z), w=wt, na.rm = TRUE)
-#'   n = ncol(z)
-#'   for (i in 1:n) {z[is.na(z[,i]),i] = means[i]}
-#' 
-#'   # model for both linear and nonlinear selection gradients
-#'   model.B <- glam(w, z, "gaussian", prep = FALSE)
-#'   # compiling all of the selection gradients together, while removing intercepts and linear estimates from the second order model
-#'   B <- c(model.B$GL$coefficients[-1], model.B$GNL$coefficients[-c(1:(length(z)+1))])
-#'   
-#'   X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
-#' 
-#'   p <- c(summary(model.B$GL)$coefficients[-1,4], summary(model.B$GNL)$coefficients[-c(1:(length(z)+1)),4])
-#'   
-#'   for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
-#'   b = rep(0,n)
-#'   for (i in 1:n) {
-#'     model = lm( w ~ z[,i], weights = wt)
-#'     b[i] = model$coef[-1]
-#'   }
-#'   imputed.var = NULL
-#'   for (i in 1:n) {imputed.var = c(imputed.var,wt.moments(z[,i], w = wt)$var)}
-#'   unimputed.var = imputed.var/q
-#'   data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b,
-#'              I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var)}
-#' 

@@ -26,6 +26,8 @@ data(BumpusMales)
 dCov(BumpusMales$w, BumpusMales[,3:11])
 }
 \references{
+Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222.  \url{http://www.jstor.org/stable/2409357}
+
 Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 }
 
