@@ -96,7 +96,7 @@ I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
   B = c(model.B.lin$coef[-1], model.B.nonlin$coefficients[-c(1:(n+1))])
 
   X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
-  p = c(summary(model.B.lin)$coefficients[-1,4], summary(model.B.nonlin)$coefficients[-1,4])
+  p = c(summary(model.B.lin)$coefficients[-1,4], summary(model.B.nonlin)$coefficients[-c(1:10),4])
   for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
 
   b <- dCov(w, z)
