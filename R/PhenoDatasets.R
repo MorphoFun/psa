@@ -460,7 +460,7 @@ readGitHub <- function(url, header = TRUE, fill = TRUE, stringAsFactors = FALSE,
 #' 		\item{\code{ID}}{individual identification number within each treatment/species combination.}
 #' }
 #' @source These data were obtained from the "KimballetalData.xlsx" data file available on Dryad: \url{http://dx.doi.org/10.5061/dryad.c8c58}, and are associated with Kimball et al. (2013)
-#' @format data.frame with 913 observations and 9 variables
+#' @format data.frame with 913 observations and 9 variables. \emph{Note: The trait data contain missing values}
 #' @references Kimball S, Gremer JR, Huxman TE, Venable DL, Angert AL (2013) Phenotypic selection favors missing trait combinations in coexisting annual plants. \emph{The American Naturalist} 182(2): 191-207.  \url{http://dx.doi.org/10.1086/671058}
 #' @usage DesertPlants
 #' @keywords datasets

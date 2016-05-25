@@ -4,7 +4,7 @@
 \name{DesertPlants}
 \alias{DesertPlants}
 \title{Phenotypic selection in winter annual plants from the Sonoran Desert}
-\format{data.frame with 913 observations and 9 variables}
+\format{data.frame with 913 observations and 9 variables. \emph{Note: The trait data contain missing values}}
 \source{
 These data were obtained from the "KimballetalData.xlsx" data file available on Dryad: \url{http://dx.doi.org/10.5061/dryad.c8c58}, and are associated with Kimball et al. (2013)
 }
