@@ -1,0 +1,103 @@
+---
+title: "Estimating phenotypic selection differentials"
+author: "Sandy Kawano"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SelectionDifferentials}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
+---
+
+### Install psa from GitHub
+```{r}
+require(devtools)
+#install_github("MorphoFun/psa", build_vignettes = TRUE)
+library(psa)
+```
+
+To see all of the vignettes that are available in `psa`, type `browseVignettes("psa")`. 
+
+### Loading the Male Bumpus data as an example
+```{r}
+data(BumpusMales)
+```
+
+### Check the structure of the data
+```{r}
+str(BumpusMales)
+```
+
+### Check the documentation to understand what each of the 13 columns represent 
+```{r}
+?BumpusMales
+```
+
+### Define the parameters
+#### Fitness will be represented by the relative fitness (w), which is the absolute fitness (W) of an individual divided by the mean absolute fitness for the group.
+```{r}
+w <- BumpusMales[,1]
+```
+
+#### The phenotypic traits are stored under z:
+```{r}
+z <- BumpusMales[,3:11]
+```
+
+#### Since Weight is a volume, and the other traits are linear measurements, we need to adjust for the dimensionality differences by taking the cube root of Weight_g. (Alternatively, one could cube all of the other phenotypic traits except Weight_g)
+```{r}
+z$Weight_g <- z$Weight_g^(1/3)
+```
+
+### Estimate phenotypic selection differentials
+
+*Overview of estimating selection differentials*    
+
+Parameter                                        | Formula
+-------------------------------------------------|----------------------------------------
+linear selection differential ($S_i$)            | cov(w, $\bar{z}$)
+quadratic selection differential ($C_{i,i}$)     | cov(w, (z - $\bar{z})^2$)
+correlational selection differential ($C_{i,j}$) | cov(w, (zi - $\bar{z_i})(z_j - \bar{z_j}$))
+
+See Brodie et al. 1995 for a more detailed description.  
+
+#### Calculate the selection differentials using psa::dCov()  
+The phenotypic traits (z) will automatically be centered to a mean of zero and scaled to unit variance, as part of the dCov function.
+```{r}
+d <- dCov(w, z)
+d
+```
+dCov outputs the linear and nonlinear selection differentials. The terms ending in ".Sq" are the quadratic selection differentials, and the interactions are the correlational selection differentials.  
+  
+  
+#### Are all methods to estimate selection differentials equivalent?  
+The short answer is: no. To illustrate this, we can use the psa::dCompare function to compare how different methods to quantify selection differentials impact the results.  
+```{r}
+# Look up the documentation for dCompare
+?dCompare
+
+round(dCompare(w, z), 3)
+```
+First, scaling the data to a mean of zero and unit variance makes a big difference. When reporting selection coefficients, it is recommended to report the *standardized* selection coefficients so that they are more comparable across studies. 
+
+Next, let's focus on dCovScale vs dRegScale. The dCovScale row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by $w = \alpha + z_i$, quadratic selection differents by $w = \alpha + z_i + 0.5z_i^2$, and correlational selection differentials by $w = \alpha + z_i + z_j + z_iz_j$, whereby the z data would be normalized to a mean of zero and unit variance.  
+Notice that the differentials produced by dCovScale and dRegScale are the same for only linear selection. The regression-based method does not produce similar results to the covariance method once nonlinear selection differentials are estimated. The estimates from using these two methods on the exact same data set can be orders of magnitude different. For instance, "TotalLength_mm x FemurL_mm" has 0.033 vs -0.009 for dCovScale and dRegScale, respectively, which alters the interpretation from an increase in covariance to a decrease in covariance. Moreover, "Weight_g x TibioTarL_mm" has 0.058 vs. 0.132, which is the difference between weak selection and strong selection. Yet, on other ocassions, dRegScale and dCovScale still produce comparable results for nonlinear terms: "Weight_g x SkullW_mm" is estimated to be 0.007 for both methods.
+  
+Similar results can be found for other datasets. Here is the humanNeonatal dataset from the gsg package, which has a much larger sample size than the BumpusMales dataset.  
+```{r}
+require(gsg)
+df <- data("humanNeonatal")
+df$w <- df$nns/mean(df$nns)
+round(dCompare(df$w, df[,2:3]), 3)
+```
+
+Given that the original formulae to estimate linear and nonlinear selection differentials (e.g., Lande and Arnold 1983, Phillips and Arnold 1989) were based on the covariance method, it would likely be best to stick to that method. With data normalized to a mean of zero and unit variance: simple linear regressions can produce similar results as the covariance method for linear selection differentials, but are inconsistent for nonlinear selection differentials. With raw data: taking the phenotypic differences before and after selection can produce similar results as the covariance method for both linear and nonlinear selection differentials.
+
+
+
+
+**References**  
+Brodie ED III, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. *TREE* 10(8): 313-318. 
+
+
