@@ -398,9 +398,32 @@ d</code></pre></div>
 ## dMeanScale                      -0.005                  -0.038
 ## dRegScale                        0.068                  -0.035</code></pre>
 <p>First, scaling the data to a mean of zero and unit variance makes a big difference. When reporting selection coefficients, it is recommended to report the <em>standardized</em> selection coefficients so that they are more comparable across studies.</p>
-<p>Next, let’s focus on dCovScale vs dRegScale. The dCovScale row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by <span class="math inline">\(w = \alpha + z_i\)</span>, quadratic selection differents by <span class="math inline">\(w = \alpha + z_i + 0.5z_i^2\)</span>, and correlational selection differentials by <span class="math inline">\(w = \alpha + z_i + z_j + z_iz_j\)</span>, whereby the z data would be normalized to a mean of zero and unit variance. Notice that the differentials produced by dCovScale and dRegScale are the same for only linear selection. The regression-based method does not produce similar results to the covariance method once nonlinear selection differentials are estimated. The estimates from using these two methods on the exact same data set can be orders of magnitude different. For instance, “TotalLength_mm x FemurL_mm” has 0.033 vs -0.009 for dCovScale and dRegScale, respectively, which alters the interpretation from an increase in covariance to a decrease in covariance. Moreover, “Weight_g x TibioTarL_mm” has 0.058 vs. 0.132, which is the difference between weak selection and strong selection. Yet, on other ocassions, dRegScale and dCovScale still produce comparable results for nonlinear terms: “Weight_g x SkullW_mm” is estimated to be 0.007 for both methods.</p>
+<p>Next, let’s focus on dCovScale vs dRegScale. The dCovScale row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by <span class="math inline">\(w = \alpha + z_i\)</span>, quadratic selection differents by <span class="math inline">\(w = \alpha + z_i + 0.5z_i^2\)</span>, and correlational selection differentials by <span class="math inline">\(w = \alpha + z_i + z_j + z_iz_j\)</span>, whereby the z data would be normalized to a mean of zero and unit variance.<br />
+Notice that the differentials produced by dCovScale and dRegScale are the same for only linear selection. The regression-based method does not produce similar results to the covariance method once nonlinear selection differentials are estimated. The estimates from using these two methods on the exact same data set can be orders of magnitude different. For instance, “TotalLength_mm x FemurL_mm” has 0.033 vs -0.009 for dCovScale and dRegScale, respectively, which alters the interpretation from an increase in covariance to a decrease in covariance. Moreover, “Weight_g x TibioTarL_mm” has 0.058 vs. 0.132, which is the difference between weak selection and strong selection. Yet, on other ocassions, dRegScale and dCovScale still produce comparable results for nonlinear terms: “Weight_g x SkullW_mm” is estimated to be 0.007 for both methods.</p>
+<p>Similar results can be found for other datasets. Here is the humanNeonatal dataset from the gsg package, which has a much larger sample size than the BumpusMales dataset.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(gsg)</code></pre></div>
+<pre><code>## Loading required package: gsg</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(humanNeonatal)
+<span class="kw">str</span>(humanNeonatal)</code></pre></div>
+<pre><code>## 'data.frame':    7036 obs. of  3 variables:
+##  $ nns : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ bw  : num  0.455 0.455 0.455 2.5 0.455 ...
+##  $ gest: num  155 165 165 170 180 180 180 185 185 185 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">humanNeonatal$w &lt;-<span class="st"> </span>humanNeonatal$nns/<span class="kw">mean</span>(humanNeonatal$nns)
+<span class="kw">round</span>(<span class="kw">dCompare</span>(humanNeonatal$w, humanNeonatal[,<span class="dv">2</span>:<span class="dv">3</span>]), <span class="dv">3</span>)</code></pre></div>
+<pre><code>##                bw  gest  bw.Sq gest.Sq bw x gest
+## dCov        0.039 1.085 -0.071 -67.872    -1.998
+## dMean       0.039 1.085 -0.071 -67.870    -1.998
+## dReg        0.113 0.003 -0.124   0.000    -0.004
+## dMean_stdsd 0.012 0.004 -0.210  -0.220    -0.415
+## dCovScale   0.067 0.061 -0.206  -0.216    -0.099
+## dMeanScale  0.000 0.000  0.000   0.000    -0.120
+## dRegScale   0.067 0.061 -0.043  -0.029    -0.043</code></pre>
+<p>Given that the original formulae to estimate linear and nonlinear selection differentials (e.g., Lande and Arnold 1983, Phillips and Arnold 1989) were based on the covariance method, it would likely be best to stick to that method. With data normalized to a mean of zero and unit variance: simple linear regressions can produce similar results as the covariance method for linear selection differentials, but are inconsistent for nonlinear selection differentials. With raw data: taking the phenotypic differences before and after selection can produce similar results as the covariance method for both linear and nonlinear selection differentials.</p>
 <p><strong>References</strong><br />
-Brodie ED III, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. <em>TREE</em> 10(8): 313-318.</p>
+Brodie ED III, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. <em>TREE</em> 10(8): 313-318.<br />
+Lande SJ, Arnold R. 1983. The measurement o fselection on correlated characters. <em>Evolution</em> 37(6): 1210-1226.<br />
+Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. <em>Evolution</em> 43(6): 1209-1222.</p>
 </div>
 </div>
 

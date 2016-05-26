@@ -81,15 +81,22 @@ round(dCompare(w, z), 3)
 ```
 First, scaling the data to a mean of zero and unit variance makes a big difference. When reporting selection coefficients, it is recommended to report the *standardized* selection coefficients so that they are more comparable across studies. 
 
+Robertson (1966) and Price (1970, 1972) originally proposed that directional selection on individual phenotypic traits could be estimated by either the covariance or regression of relative fitness on the trait (Lande and Arnold 1983).  
+
 Next, let's focus on dCovScale vs dRegScale. The dCovScale row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by $w = \alpha + z_i$, quadratic selection differents by $w = \alpha + z_i + 0.5z_i^2$, and correlational selection differentials by $w = \alpha + z_i + z_j + z_iz_j$, whereby the z data would be normalized to a mean of zero and unit variance.  
 Notice that the differentials produced by dCovScale and dRegScale are the same for only linear selection. The regression-based method does not produce similar results to the covariance method once nonlinear selection differentials are estimated. The estimates from using these two methods on the exact same data set can be orders of magnitude different. For instance, "TotalLength_mm x FemurL_mm" has 0.033 vs -0.009 for dCovScale and dRegScale, respectively, which alters the interpretation from an increase in covariance to a decrease in covariance. Moreover, "Weight_g x TibioTarL_mm" has 0.058 vs. 0.132, which is the difference between weak selection and strong selection. Yet, on other ocassions, dRegScale and dCovScale still produce comparable results for nonlinear terms: "Weight_g x SkullW_mm" is estimated to be 0.007 for both methods.
   
 Similar results can be found for other datasets. Here is the humanNeonatal dataset from the gsg package, which has a much larger sample size than the BumpusMales dataset.  
 ```{r}
 require(gsg)
-df <- data("humanNeonatal")
-df$w <- df$nns/mean(df$nns)
-round(dCompare(df$w, df[,2:3]), 3)
+data(humanNeonatal)
+str(humanNeonatal)
+
+# Creating a relative fitness (w) variable
+humanNeonatal$w <- humanNeonatal$nns/mean(humanNeonatal$nns)
+
+# Comparing the selection differentials
+round(dCompare(humanNeonatal$w, humanNeonatal[,2:3]), 3)
 ```
 
 Given that the original formulae to estimate linear and nonlinear selection differentials (e.g., Lande and Arnold 1983, Phillips and Arnold 1989) were based on the covariance method, it would likely be best to stick to that method. With data normalized to a mean of zero and unit variance: simple linear regressions can produce similar results as the covariance method for linear selection differentials, but are inconsistent for nonlinear selection differentials. With raw data: taking the phenotypic differences before and after selection can produce similar results as the covariance method for both linear and nonlinear selection differentials.
@@ -98,6 +105,11 @@ Given that the original formulae to estimate linear and nonlinear selection diff
 
 
 **References**  
-Brodie ED III, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. *TREE* 10(8): 313-318. 
+Brodie ED III, Moore AJ, Janzen FJ. 1995. Visualizing and quantifying natural selection. *TREE* 10(8): 313-318.   
+Lande SJ, Arnold R. 1983. The measurement o fselection on correlated characters. *Evolution* 37(6): 1210-1226.  
+Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. *Evolution* 43(6): 1209-1222.
+Price GR. 1970. Selection and covariance. *Nature* 227: 520-521.  
+Price GR. 1972. Extension of covariance selection mathematics. *Annals of Human Genetics* 35: 485-490.  
+Robertson A. 1966. A mathematical model of the culling process in dairy cattle. *Animal Production* 8: 93-108.  
 
 
