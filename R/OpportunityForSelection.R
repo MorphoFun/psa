@@ -37,17 +37,18 @@ I_total <- function(fitness, type = c("W", "w")) {
 #'
 #' @description Calculation of the opportunity for selection based on the method provided by Moorad and Wade (2013), in which the variation in fitness due to a given trait can be calculated as the product of its selection gradient and selection differential. The I_traits function was written using the code provided in the supplementary material of Moorad and Wade (2013), with slight modifications including a slight correction to  s = b * q * unimputed.var rather than s = B * q * unimputed.var. In addition, the original method by Moorad and Wade (2013) estimated the selection differentials using simple linear regressions that could incorporate weights, but \code{I_traits} estimates the selection differentials using the covariance method (Phillips and Arnold 1983) that does not incorporate weights. The \code{I_traits} function also automatically mean-centers the phenotypic traits. 
 #' 
-#' @usage I_traits(z, fitness, fitType = c("rel", "abs"))
+#' @usage I_traits(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cross"))
 #'
 #' @param \code{z} Phenotypic traits. 
 #' @param \code{fitness} Vector of numeric or integer values that represent the fitness metric or proxy.
 #' @param \code{fitType} Type of fitness metric or proxy, either absolute fitness (\code{"W"}) or relative fitness (\code{"w"}).
+#' @param \code{zType} Type of data: "long" = longitudinal, and "cross" = cross-sectional.
 #'
 #' @return \code{I_traits} returns a matrix of numeric values. 
 #' 
 #' \itemize{
 #'    \item \code{B:} A vector of selection gradients (normalized to mean of zero and unit variance)
-#'    \item \code{b:} slope of a simple linear regression of relative fitness against an individual phenotypic trait.
+#'    \item \code{b:} selection differential without imputed variance or weights
 #'    \item \code{q:} Weights to be applied to the phenotypic traits (defaults to 1).
 #'    \item \code{var:} Imputed variance due to missing data, divided by the weight.
 #'    \item \code{s:} A vector of selection differentials (normalized to mean of zero and unit variance)
@@ -55,13 +56,14 @@ I_total <- function(fitness, type = c("W", "w")) {
 #'    \item \code{I.model:} Opportunity of selection, based on the model of phenotypic traits given. 
 #'    \item \code{I.total:} The total opportunity for selection, based on weighted variance of fitness.
 #' }
+#' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Moorad JA, Wade MJ. 2013. Selection gradients, the opportunity for selection, and the coefficient of determination. \emph{The American Naturalist} 181(3): 291-300. \url{http://www.journals.uchicago.edu/doi/abs/10.1086/669158}
 #' @references Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222. \url{http://www.jstor.org/stable/2409357}
 #' @import matrixStats
 #' @import corpcor
 #' @export
 
-I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
+I_traits<-function(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cross"), wt = NULL){
   ifelse(fitType == "rel", w <- fitness, w <- fitness/mean(fitness))
   ifelse(is.numeric(wt), wt <- wt, wt <- rep(1, dim(z)[1]))
 
@@ -93,20 +95,38 @@ I_traits<-function(z, fitness, fitType = c("rel", "abs"), wt = NULL){
   }
   model.B.nonlin <- lm(as.formula(NLM), data = z, weights = wt)
 
-  B = c(model.B.lin$coef[-1], model.B.nonlin$coefficients[-c(1:(n+1))])
-
-  X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
-  p = c(summary(model.B.lin)$coefficients[-1,4], summary(model.B.nonlin)$coefficients[-c(1:10),4])
-  for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
-
-  b <- dCov(w, z)
-
+  if (zType == "long") {
+    B = c(model.B.lin$coef[-1], model.B.nonlin$coefficients[-c(1:(n+1))])
+    p = c(summary(model.B.lin)$coefficients[-1,4], summary(model.B.nonlin)$coefficients[-c(1:10),4])
+    b <- dCov(w, z)
+    X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
+    for (i in 1:length(p)) {X$p[which(X$name == names(p[i]))] = p[i] }
+    
+  } else {
+    P <- cov(z)
+    beta <- t(solve(P) %*% as.vector(cov(w,z)))
+    df <- cbind(w,z)
+    selected <- subset(df, w > 0); P_star <- cov(selected[,-1])
+    C <- P_star - P + as.vector(cov(w,z)) * as.vector(t(cov(w,z))) 
+    C_quad <- diag(C)
+    C_corr <- C[lower.tri(C)]
+    b <- c(cov(w,z), C_quad, C_corr)
+    names(b) <- c(names(z), names(nonlinz))
+    gamma_matrix <- solve(P) %*% C %*% solve(P)
+    gamma_quad <- diag(gamma_matrix)
+    gamma_corr <- gamma_matrix[lower.tri(gamma_matrix)]
+    B <- c(beta, gamma_quad, gamma_corr)
+    names(B) <- c(names(z), names(nonlinz))
+    
+    # could add bootstrapping to estiamte p-values later, but not necessary for output
+    X = data.frame(B=B, p = rep(NA,length(B)), name = names(B))
+  }
   imputed.var = NULL
 
   for (i in 1:ncol(totalz)) {imputed.var = c(imputed.var,wt.moments(totalz[,i], w = wt)$var)}
   unimputed.var = imputed.var/q
   data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b,
-             I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var)}
+             I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var, row.names = c(names(z), names(nonlinz)))}
 
 #' @examples
 #'
