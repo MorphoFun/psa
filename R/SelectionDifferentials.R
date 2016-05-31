@@ -136,8 +136,6 @@ dCov <- function(w, z) {
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
 #' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
 #' @param \code{normalize} Indicate whether phenotypic trait data should be normalized to a mean of zero and unit variance.
-#' @param \code{fitType} 
-#'  
 #'
 #' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
 #' @section Output:  \code{dBeforeAfter} is the selection differential calculated as  as described in Brodie et al. (1995). 
