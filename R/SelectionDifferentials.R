@@ -331,7 +331,6 @@ dCov <- function(w, z) {
     z_dev <- sapply(z, function(x) x - mean(x))
     dCov_nonlinear <- cov(w, multiprod(z_dev))
     
-    
     differentials <- c(dCov_linear, dCov_nonlinear)
     fullNames <- c(colnames(z), colnames(dCov_nonlinear))
     names(differentials) <- fullNames
@@ -348,3 +347,118 @@ dCov <- function(w, z) {
   return(differentials)
 }
 
+
+#' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
+#'  
+
+differentials <- function(w, z, method = c(1,2,3, "all"), normalize = TRUE, fitType = "gaussian", ...) {
+  
+  isScale <- function(x) {
+    ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
+    if (is.vector(x) == TRUE) {
+      ifelse(round(mean(x),6)==0 && sd(x)==1, "TRUE", "FALSE")
+    } else {
+      ifelse(round(colMeans(x),6)==0 && sapply(x, FUN=function(x) sd(x))==1, "TRUE", "FALSE")
+    }
+  }
+  
+  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  
+      ## method 1: Based on covariance equations from Table 1 of Brodie et al. 1995
+      dCov <- function(w, z) {
+        d <- cbind(w,z)
+        dCov_linear <- as.numeric(cov(w, z))
+        if (ncol(d) > 2) {
+          z_dev <- sapply(z, function(x) x - mean(x))
+          dCov_nonlinear <- cov(w, multiprod(z_dev))
+          diffs <- c(dCov_linear, dCov_nonlinear)
+          fullNames <- c(colnames(z), colnames(dCov_nonlinear))
+          names(diffs) <- fullNames
+        } else {
+          z_dev <- z - colMeans(z)
+          dCov_quad <- cov(w, z_dev^2)
+          diffs <- c(dCov_linear, dCov_quad)
+          names(diffs) <- c("z", "z^2")
+        }
+        diffs <- c(Method = "dCov", diffs)
+        return(diffs)
+      }
+      
+      ## method 2: Based on before-after equations from Table 1 in Brodie et al. 1995
+      dBeforeAfter <- function(w,z) { 
+        d <- cbind(w,z)
+        z_before <- data.frame(z, stringsAsFactors = FALSE) 
+        
+        if (ncol(d) >2) {
+          z_after <- subset(d, w > 0, select = c(names(z)))
+          dBA_linear <- sapply(z_after, function(x) mean(x)) - sapply(z, function(x) mean(x))
+          dBA_quad <- diag(var(z_after)) - diag(var(z_before)) + dBA_linear^2
+          dBA_corr <- cov(z_after)[lower.tri(cov(z_after))] - cov(z_before)[lower.tri(cov(z_before))] + tcrossprod(dBA_linear)[lower.tri(tcrossprod(dBA_linear))]
+          diffs <- c(dBA_linear, dBA_quad, dBA_corr)
+          fullNames <- c(names(z), names(multiprod(z)))
+          names(diffs) <- fullNames
+        } else {
+          z_after <- data.frame(subset(d, w > 0)[,2], stringsAsFactors = FALSE)
+          dBA_linear <- colMeans(z_after) - colMeans(z_before)
+          dBA_quad <- var(z_after) - var(z_before) + dBA_linear^2
+          diffs <- c(dBA_linear, dBA_quad)
+          names(diffs) <- c("z", "z^2")
+        }
+        diffs <- c(Method = "dBeforeAfter", diffs)
+        return(diffs)
+      }
+      
+      ## method 3: matrix algebra approach from Lande and Arnold (1983)
+      dMatrix <- function(w,z) {
+          d <- cbind(w,z)
+          s <- cov(w,z)
+          ssT <- as.vector(s) * as.vector(t(s))
+          P <- cov(as.matrix(z))
+          if (ncol(d) > 2) {
+            P_star <- cov(subset(d, w > 0, select = c(names(z)))) 
+            C = P_star - P + ssT
+            diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
+            fullNames <- c(names(z), names(multiprod(z)))
+            names(diffs) <- fullNames
+          } else {
+            P_star <- cov(as.matrix(subset(d, w > 0)[,-c(1)]))
+            C = P_star - P + ssT
+            diffs <- c(s,C)
+            names(diffs) <- c("z", "z^2")
+          }
+          diffs <- c(Method = "dMatrix", diffs)
+          return(diffs)
+      }
+      
+      dReg <- function(w,z) {
+        # double-check whether correlational models should have quadratic terms (maybe not)
+        d <- cbind(w, z)
+        fitType == fitType
+        dReg_linear <- lm(w ~ ., data = d)
+        if (ncol(d) > 2) {
+          dReg_nonlinearmod <- glam(w, z, fitType = fitType, prep = FALSE)
+          dReg_nonlinear <- dReg_nonlinearmod$GNL$coefficients[-c(1:(length(z)+1))]
+        } else {
+          names(d) <- c("w", "z")
+          dReg_nonlinearmod <- lm(w ~ z + I(0.5*z^2), data = d)
+          dReg_nonlinear <- dReg_nonlinearmod$coefficients[-c(1:2)]
+        }
+        diffs <- c("dReg", dReg_linear$coefficients[-1], dReg_nonlinear)
+        names(diffs)[1] <- "Method"
+        return(diffs)
+      }
+      
+      if (method == 1) {
+        output <- data.frame(dCov(w,z), check.names = FALSE)
+      } else if(method == 2) {
+        output <- data.frame(dBeforeAfter(w,z), check.names = FALSE)
+      } else if(method == 3) {
+        output <- data.frame(dMatrix(w,z), check.names = FALSE)
+      } else if(method == 4) {
+        output <- data.frame(dReg(w,z), check.names = FALSE)
+      } else if(method == "all") {
+        output <- data.frame(dCov = dCov(w,z), dBeforeAfter = dBeforeAfter(w,z), dMatrix = dMatrix(w,z), dReg = dReg(w,z))
+      }
+      return(output)
+}
+  
