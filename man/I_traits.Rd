@@ -4,7 +4,7 @@
 \alias{I_traits}
 \title{Partitioning the opportunity for selection due to individual phenotypic traits}
 \usage{
-I_traits(z, fitness, fitType = c("rel", "abs"))
+I_traits(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cross"))
 }
 \arguments{
 \item{\code{z}}{Phenotypic traits.}
@@ -12,13 +12,15 @@ I_traits(z, fitness, fitType = c("rel", "abs"))
 \item{\code{fitness}}{Vector of numeric or integer values that represent the fitness metric or proxy.}
 
 \item{\code{fitType}}{Type of fitness metric or proxy, either absolute fitness (\code{"W"}) or relative fitness (\code{"w"}).}
+
+\item{\code{zType}}{Type of data: "long" = longitudinal, and "cross" = cross-sectional.}
 }
 \value{
 \code{I_traits} returns a matrix of numeric values. 
 
 \itemize{
    \item \code{B:} A vector of selection gradients (normalized to mean of zero and unit variance)
-   \item \code{b:} slope of a simple linear regression of relative fitness against an individual phenotypic trait.
+   \item \code{b:} selection differential without imputed variance or weights
    \item \code{q:} Weights to be applied to the phenotypic traits (defaults to 1).
    \item \code{var:} Imputed variance due to missing data, divided by the weight.
    \item \code{s:} A vector of selection differentials (normalized to mean of zero and unit variance)
@@ -37,6 +39,8 @@ data(BumpusMales)
 I_total(BumpusMales$W, type = "W")
 }
 \references{
+Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
+
 Moorad JA, Wade MJ. 2013. Selection gradients, the opportunity for selection, and the coefficient of determination. \emph{The American Naturalist} 181(3): 291-300. \url{http://www.journals.uchicago.edu/doi/abs/10.1086/669158}
 
 Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222. \url{http://www.jstor.org/stable/2409357}
