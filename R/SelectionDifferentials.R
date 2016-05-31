@@ -186,10 +186,10 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           diffs <- c(dCov_linear, dCov_quad)
           names(diffs) <- c("z", "z^2")
         }
-        diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+        diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
         diffs$Method <- "dCov"
         diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffs)
+        return(diffsfinal)
       }
       
       ## method 2: Based on before-after equations from Table 1 in Brodie et al. 1995
@@ -212,10 +212,10 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           diffs <- c(dBA_linear, dBA_quad)
           names(diffs) <- c("z", "z^2")
         }
-        diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+        diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
         diffs$Method <- "dBeforeAfter"
         diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffs)
+        return(diffsfinal)
       }
       
       ## method 3: matrix algebra approach from Lande and Arnold (1983)
@@ -236,7 +236,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
             diffs <- c(s,C)
             names(diffs) <- c("z", "z^2")
           }
-          diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+          diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
           diffs$Method <- "dMatrix"
           diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
           return(diffsfinal)
@@ -272,11 +272,13 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           }
             dReg_corr <- unlist(dReg_corrcoeffs)
             dReg_nonlinear <- c(dReg_quad, dReg_corr)  
+            names(dReg_nonlinear) <- names(multiprod(z))
         } else {
-          dReg_linear <- lm(w ~ ., data = d)
           names(d) <- c("w", "z")
+          dReg_linear <- lm(w ~ ., data = d)$coefficients[-1]
           dReg_nonlinearmod <- lm(w ~ z + I(0.5*z^2), data = d)
-          dReg_nonlinear <- dReg_nonlinearmod$coefficients[-c(1:2)]
+          dReg_nonlinear <- data.frame(t(dReg_nonlinearmod$coefficients[-c(1:2)]))
+          names(dReg_nonlinear) <- "z.Sq"
         }
         diffs <- data.frame(t(c(dReg_linear, dReg_nonlinear)), check.names = FALSE)
         diffs$Method <- "dReg"
