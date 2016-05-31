@@ -238,18 +238,41 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
       
       dReg <- function(w,z) {
         # double-check whether correlational models should have quadratic terms (maybe not)
-        d <- cbind(w, z)
-        fitType == "gaussian"
-        dReg_linear <- lm(w ~ ., data = d)
+        d <- data.frame(w, z)
+  
         if (ncol(d) > 2) {
-          dReg_nonlinearmod <- glam(w, z, fitType = fitType, prep = FALSE)
-          dReg_nonlinear <- dReg_nonlinearmod$GNL$coefficients[-c(1:(length(z)+1))]
+          ll <- list()
+          dReg_linearcoeffs <- list()
+          qq <- list()
+          dReg_quadcoeffs <- list()
+          for (i in 1:length(z)) {
+            ll[i] <- paste("w ~ ", names(z)[i])
+            dReg_linearmod <- lapply(ll, function(x) lm(as.formula(x), data = d))
+            dReg_linearcoeffs[[i]] <- dReg_linearmod[[i]]$coefficients[-1]
+            dReg_linear <- unlist(dReg_linearcoeffs)
+            qq[i] <- paste("w ~ ", names(z)[i], " + I(0.5*", names(z)[i], "^2)", sep="")
+            dReg_quadmod <- lapply(qq, function(x) lm(as.formula(x), data = d))
+            dReg_quadcoeffs[[i]] <- dReg_quadmod[[i]]$coefficients[-c(1:2)]
+            dReg_quad <- unlist(dReg_quadcoeffs)
+          }
+          idn <- combn(1:length(z), 2)
+          modx <- list()
+          dReg_corrmod <- list()
+          dReg_corrcoeffs <- list()
+          for (i in 1:ncol(idn)) {
+            modx[[i]] <- paste("w ~ ", paste(names(z)[idn[,i]], collapse = " + "), " + ", paste(names(z)[idn[,i]], collapse = ":"))
+            dReg_corrmod <- lapply(modx, function(x) lm(as.formula(x), data = d))
+            dReg_corrcoeffs[[i]] <- c(dReg_corrmod[[i]]$coefficients[-c(1:3)])
+          }
+            dReg_corr <- unlist(dReg_corrcoeffs)
+            dReg_nonlinear <- c(dReg_quad, dReg_corr)  
         } else {
+          dReg_linear <- lm(w ~ ., data = d)
           names(d) <- c("w", "z")
           dReg_nonlinearmod <- lm(w ~ z + I(0.5*z^2), data = d)
           dReg_nonlinear <- dReg_nonlinearmod$coefficients[-c(1:2)]
         }
-        diffs <- c("dReg", dReg_linear$coefficients[-1], dReg_nonlinear)
+        diffs <- c("dReg", dReg_linear, dReg_nonlinear)
         names(diffs)[1] <- "Method"
         return(diffs)
       }

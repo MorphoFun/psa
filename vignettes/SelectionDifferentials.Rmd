@@ -72,12 +72,16 @@ dCov outputs the linear and nonlinear selection differentials. The terms ending 
   
   
 #### Are all methods to estimate selection differentials equivalent?  
-The short answer is: no. To illustrate this, we can use the psa::dCompare function to compare how different methods to quantify selection differentials impact the results.  
+The short answer is: no. To illustrate this, we can use the psa::differentials function to compare how different methods to quantify selection differentials impact the results.  
 ```{r}
 # Look up the documentation for dCompare
-?dCompare
+?differentials
 
-round(dCompare(w, z), 3)
+# the default is to estimate the differentials with data that have been normalized to a mean of zero and unit variance
+differentials(w, z, "all")
+
+# the function can also be run without normalizing the phenotypic traits by setting normalize = FALSE
+differentials(w, z, "all", normalize = FALSE)
 ```
 First, scaling the data to a mean of zero and unit variance makes a big difference. When reporting selection coefficients, it is recommended to report the *standardized* selection coefficients so that they are more comparable across studies. 
 
@@ -96,10 +100,10 @@ str(humanNeonatal)
 humanNeonatal$w <- humanNeonatal$nns/mean(humanNeonatal$nns)
 
 # Comparing the selection differentials
-round(dCompare(humanNeonatal$w, humanNeonatal[,2:3]), 3)
+differentials(humanNeonatal$w, humanNeonatal[,2:3], "all")
 ```
 
-Given that the original formulae to estimate linear and nonlinear selection differentials (e.g., Lande and Arnold 1983, Phillips and Arnold 1989) were based on the covariance method, it would likely be best to stick to that method. With data normalized to a mean of zero and unit variance: simple linear regressions can produce similar results as the covariance method for linear selection differentials, but are inconsistent for nonlinear selection differentials. With raw data: taking the phenotypic differences before and after selection can produce similar results as the covariance method for both linear and nonlinear selection differentials.
+Given that the original formulae to estimate linear and nonlinear selection differentials (e.g., Lande and Arnold 1983, Phillips and Arnold 1989) were based on the covariance method, it would likely be best to stick to that method. With data normalized to a mean of zero and unit variance: simple linear regressions can produce similar results as the covariance method for linear selection differentials, but are inconsistent for nonlinear selection differentials. With raw data: taking the phenotypic differences before and after selection can produce similar results as the covariance method for both linear and nonlinear selection differentials. For the humanNeonatal dataset, notice that the estimates were relatively consistent amongst the first three methods for both linear and nonlienar selection differentials; the regression method produced the most incongruent results. 
 
 
 
