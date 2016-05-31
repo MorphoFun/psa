@@ -576,5 +576,101 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 }
 
 
+#' @title Estimating phenotypic selection gradients
+#'
+#' @name gradients
+#'
+#' @usage gradients(w, z, method = c(1,2, "all"), normalize = TRUE, ...)
+#' @description \code{gradients} estimates the linear and nonlinear selection gradients, based on the Lande and Arnold (1983) paper. 
+#' 
+#' @param \code{w} Relative fitness.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted.
+#' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
+#' @param \code{normalize} Indicate whether phenotypic trait data should be normalized to a mean of zero and unit variance.
 
+#'
+#' @details Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The matrix algebra approach estimates the linear and nonlinear selection coefficients using equations outlined in Lande and Arnold (1983): linear selection differential (s) is based on eqation 4, linear selection gradient (beta) is equation 17, nonlinear selection differential (C) is equation 13b, and nonlinear selection gradient (gamma) is equation 14a.
+#'
+#' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
+#' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
+#' 
+#' @seealso \code{glam}, \code{differentials}
+#' @examples
+#' 
+#' data(BumpusMales)
+#' gradients(BumpusMales$w, BumpusMales[,3:11], "all")
+#' @export 
+
+gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
+  
+  isScale <- function(x) {
+    ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
+    if (is.vector(x) == TRUE) {
+      ifelse(round(mean(x),6)==0 && sd(x)==1, "TRUE", "FALSE")
+    } else {
+      ifelse(round(colMeans(x),6)==0 && sapply(x, FUN=function(x) sd(x))==1, "TRUE", "FALSE")
+    }
+  }
+  z_raw <- z
+  
+  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  
+  # nonlinear selection differential
+  # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
+  gMatrix <- function(w,z) {
+    # linear selection differential
+    s <- cov(w,z)
+    
+    # phenotypic variance-covariance matrix
+    P <- cov(z)
+    
+    # linear selection gradient - P matrix
+    beta_matrix <- solve(P) %*% as.vector(s)
+    
+    ssT <- as.vector(s) %*% as.vector(t(s))
+    P <- cov(as.matrix(z))
+    rawdata <- cbind(w, z_raw)
+    P_star <- cov(scale(subset(rawdata, w > 0, select = c(names(z))))) 
+
+      C = P_star - P + as.numeric(ssT)
+      diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
+      fullNames <- c(names(z), names(multiprod(z)))
+      names(diffs) <- fullNames
+    
+    # nonlinear selection gradient - P matrix
+    gamma_matrix <- solve(P) %*% C %*% solve(P)
+    grads <- c(t(beta_matrix), diag(C), C[lower.tri(C)])
+    names(grads) <- c(names(z), names(multiprod(z)))
+      return(grads)
+  }
+
+  
+  # nonlinear selection gradient - OLS regression
+  gReg <- function(w, z) {
+    d <- cbind(w,z)
+    
+    # linear selection gradient - OLS regression
+    beta_reg <- lm(w ~ ., data = d)
+
+    qq <- list()
+    for (i in 1:length(z)) {
+      qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
+      QT <- paste(unlist(qq), collapse = " + ")
+      NLM <- paste("w ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+    }
+    gamma_reg <- lm(as.formula(NLM), data = d)
+    grads <- c(beta_reg$coefficients[-1], gamma_reg$coefficients[-c(1:length(d))])
+    return(grads)
+  }
+
+if (method == 1) {
+  output <- data.frame(t(gMatrix(w,z)), check.names = FALSE)
+} else if(method == 2) {
+  output <- data.frame(t(gReg(w,z)), check.names = FALSE)
+} else if(method == "all") {
+  output <- data.frame(t(cbind(gMatrix = gMatrix(w,z), gReg = gReg(w,z))))
+}
+return(output)
+
+}
 
