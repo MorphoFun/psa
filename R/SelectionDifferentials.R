@@ -186,7 +186,9 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           diffs <- c(dCov_linear, dCov_quad)
           names(diffs) <- c("z", "z^2")
         }
-        diffs <- c(Method = "dCov", diffs)
+        diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+        diffs$Method <- "dCov"
+        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
         return(diffs)
       }
       
@@ -210,7 +212,9 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           diffs <- c(dBA_linear, dBA_quad)
           names(diffs) <- c("z", "z^2")
         }
-        diffs <- c(Method = "dBeforeAfter", diffs)
+        diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+        diffs$Method <- "dBeforeAfter"
+        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
         return(diffs)
       }
       
@@ -232,8 +236,10 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
             diffs <- c(s,C)
             names(diffs) <- c("z", "z^2")
           }
-          diffs <- c(Method = "dMatrix", diffs)
-          return(diffs)
+          diffs <- data.frame(diffs, stringsAsFactors = FALSE, check.names = FALSE)
+          diffs$Method <- "dMatrix"
+          diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
+          return(diffsfinal)
       }
       
       dReg <- function(w,z) {
@@ -272,9 +278,10 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
           dReg_nonlinearmod <- lm(w ~ z + I(0.5*z^2), data = d)
           dReg_nonlinear <- dReg_nonlinearmod$coefficients[-c(1:2)]
         }
-        diffs <- c("dReg", dReg_linear, dReg_nonlinear)
-        names(diffs)[1] <- "Method"
-        return(diffs)
+        diffs <- data.frame(t(c(dReg_linear, dReg_nonlinear)), check.names = FALSE)
+        diffs$Method <- "dReg"
+        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
+        return(diffsfinal)
       }
       
       if (method == 1) {
@@ -286,7 +293,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
       } else if(method == 4) {
         output <- data.frame(t(dReg(w,z)), check.names = FALSE)
       } else if(method == "all") {
-        output <- data.frame(t(cbind(dCov = dCov(w,z), dBeforeAfter = dBeforeAfter(w,z), dMatrix = dMatrix(w,z), dReg = dReg(w,z))), row.names = NULL)
+        output <- data.frame((rbind(dCov = dCov(w,z), dBeforeAfter = dBeforeAfter(w,z), dMatrix = dMatrix(w,z), dReg = dReg(w,z))), row.names = NULL, stringsAsFactors = FALSE, check.names = FALSE)
       }
       return(output)
 }
