@@ -300,3 +300,40 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
       return(output)
 }
   
+
+## attempting to create function to estimate confidence intervals
+require(boot)
+require(matrixStats)
+CI <- function(w, z, conf = 0.95, R = 2000) {
+  dCov <- function(w, z) {
+    d <- cbind(w,z)
+    dCov_linear <- as.numeric(cov(w, z))
+    if (ncol(d) > 2) {
+      z_dev <- sapply(z, function(x) x - mean(x))
+      dCov_nonlinear <- cov(w, multiprod(z_dev))
+      diffs <- c(dCov_linear, dCov_nonlinear)
+      fullNames <- c(colnames(z), colnames(dCov_nonlinear))
+      names(diffs) <- fullNames
+    } else {
+      z_dev <- z - colMeans(z)
+      dCov_quad <- cov(w, z_dev^2)
+      diffs <- c(dCov_linear, dCov_quad)
+      names(diffs) <- c("z", "z^2")
+    }
+    diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
+    diffs$Method <- "dCov"
+    diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
+    return(diffsfinal)
+  }
+
+# Yay! It works to produce the standard errors for at leave dCov() for now; matches up fairly well with the SE's that are produced from dReg; now need to expand this function to cover the other options in differentials, and then add this function to diffferentials or create a new one
+    df <- data.frame(BumpusMales$w,data.frame(scale(BumpusMales[,3:11])))
+    dCovFunc <- function(df,i){
+      df <- df[i,]
+      dCov(df[,1], df[i,-c(1)])
+      }
+    boot.out <- boot(data = df, dCovFunc, R = 500)
+
+
+  return(boot.out)
+}

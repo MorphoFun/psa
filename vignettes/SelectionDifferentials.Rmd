@@ -15,6 +15,7 @@ vignette: >
 require(devtools)
 #install_github("MorphoFun/psa", build_vignettes = TRUE)
 library(psa)
+library(ggplot2)
 ```
 
 To see all of the vignettes that are available in `psa`, type `browseVignettes("psa")`. 
@@ -78,7 +79,27 @@ The short answer is: no. To illustrate this, we can use the psa::differentials f
 ?differentials
 
 # the default is to estimate the differentials with data that have been normalized to a mean of zero and unit variance
-differentials(w, z, "all")
+bm <- differentials(w, z, "all")
+
+library(reshape2)
+melt_bm <- melt(bm)
+
+# plot the data
+# see docs.ggplot2.org/current/geom_point.html
+ggplot(melt_bm, aes(Method, value, fill = Method)) + 
+  geom_point(aes(colour = factor(Method))) + 
+  # once I have the se's try:   geom_point(aes(colour = factor(Method), size = se)) + 
+  facet_wrap(~variable) + 
+  geom_abline(intercept = 0, slope = 0, colour = "gray") +
+  labs(title = "Selection differentials for male Bumpus datas") + 
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme(legend.position = "none",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "black")
+    )
 
 # the function can also be run without normalizing the phenotypic traits by setting normalize = FALSE
 differentials(w, z, "all", normalize = FALSE)
