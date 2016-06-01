@@ -601,7 +601,7 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #' gradients(BumpusMales$w, BumpusMales[,3:11], "all")
 #' @export 
 
-gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
+gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, printmod = FALSE, ...) {
   
   isScale <- function(x) {
     ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
@@ -613,7 +613,7 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
   }
   z_raw <- z
   
-  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z, center = FALSE), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
   
   # nonlinear selection differential
   # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
@@ -639,9 +639,14 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
     
     # nonlinear selection gradient - P matrix
     gamma_matrix <- solve(P) %*% C %*% solve(P)
-    grads <- c(t(beta_matrix), diag(C), C[lower.tri(C)])
+    grads <- c(t(beta_matrix), diag(gamma_matrix), gamma_matrix[lower.tri(gamma_matrix)])
     names(grads) <- c(names(z), names(multiprod(z)))
-      return(grads)
+    done <- list(
+      grads = grads,
+      beta = beta_matrix,
+      gamma = gamma_matrix
+    )
+      return(done)
   }
 
   
@@ -659,16 +664,20 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
       NLM <- paste("w ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
     }
     gamma_reg <- lm(as.formula(NLM), data = d)
-    grads <- c(beta_reg$coefficients[-1], gamma_reg$coefficients[-c(1:length(d))])
-    return(grads)
+    done <- list(
+      grads = c(beta_reg$coefficients[-1], gamma_reg$coefficients[-c(1:length(d))]),
+      beta = beta_reg,
+      gamma = gamma_reg
+    )
+    return(done)
   }
 
 if (method == 1) {
-  output <- data.frame(t(gMatrix(w,z)), check.names = FALSE, row.names = "gMatrix")
+  ifelse(printmod == TRUE, output <- gMatrix(w,z), output <- data.frame(t(gMatrix(w,z)$grads), check.names = FALSE, row.names = "gMatrix"))
 } else if(method == 2) {
-  output <- data.frame(t(gReg(w,z)), check.names = FALSE, row.names = "gReg")
+  ifelse(printmod == TRUE, output <- gReg(w,z), output <- data.frame(t(gReg(w,z)$grads), check.names = FALSE, row.names = "gReg"))
 } else if(method == "all") {
-  output <- data.frame(rbind(gMatrix = gMatrix(w,z), gReg = gReg(w,z)))
+  ifelse(printmod == TRUE, output <- list(gMatrix = gMatrix(w,z), gReg = gReg(w,z)), output <- data.frame(rbind(gMatrix = gMatrix(w,z)$grads, gReg = gReg(w,z)$grads)))
 }
 return(output)
 
