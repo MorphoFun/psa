@@ -613,7 +613,7 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
   }
   z_raw <- z
   
-  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z, center = FALSE), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
   
   # nonlinear selection differential
   # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
@@ -664,11 +664,11 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, ...) {
   }
 
 if (method == 1) {
-  output <- data.frame(t(gMatrix(w,z)), check.names = FALSE)
+  output <- data.frame(t(gMatrix(w,z)), check.names = FALSE, row.names = "gMatrix")
 } else if(method == 2) {
-  output <- data.frame(t(gReg(w,z)), check.names = FALSE)
+  output <- data.frame(t(gReg(w,z)), check.names = FALSE, row.names = "gReg")
 } else if(method == "all") {
-  output <- data.frame(t(cbind(gMatrix = gMatrix(w,z), gReg = gReg(w,z))))
+  output <- data.frame(rbind(gMatrix = gMatrix(w,z), gReg = gReg(w,z)))
 }
 return(output)
 
