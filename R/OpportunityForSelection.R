@@ -47,11 +47,11 @@ I_total <- function(fitness, type = c("W", "w")) {
 #' @return \code{I_traits} returns a matrix of numeric values. 
 #' 
 #' \itemize{
-#'    \item \code{B:} A vector of selection gradients (normalized to mean of zero and unit variance)
+#'    \item \code{B:} A vector of selection gradients (standardized to mean of zero and unit variance)
 #'    \item \code{b:} selection differential without imputed variance or weights
 #'    \item \code{q:} Weights to be applied to the phenotypic traits (defaults to 1).
 #'    \item \code{var:} Imputed variance due to missing data, divided by the weight.
-#'    \item \code{s:} A vector of selection differentials (normalized to mean of zero and unit variance)
+#'    \item \code{s:} A vector of selection differentials (standardized to mean of zero and unit variance)
 #'    \item \code{i:} Additive opportunity for selection for an individual phenotypic trait. 
 #'    \item \code{I.model:} Opportunity of selection, based on the model of phenotypic traits given. 
 #'    \item \code{I.total:} The total opportunity for selection, based on weighted variance of fitness.
@@ -125,8 +125,7 @@ I_traits<-function(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cro
 
   for (i in 1:ncol(totalz)) {imputed.var = c(imputed.var,wt.moments(totalz[,i], w = wt)$var)}
   unimputed.var = imputed.var/q
-  data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b,
-             I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var, row.names = c(names(z), names(nonlinz)))}
+  data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b, I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var, row.names = c(names(z), names(nonlinz)))}
 
 #' @examples
 #'
@@ -135,4 +134,4 @@ I_traits<-function(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cro
 #' data(BumpusMales)
 
 #' # Calculate the opportunity for selection for the total variation in fitness and variation from phenotypic traits
-#' I_traits(BumpusMales[,3:11], BumpusMales$w, fitType = "rel")
+#' I_traits(BumpusMales$w, BumpusMales[,3:11], fitType = "rel", zType = "long")
