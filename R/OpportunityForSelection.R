@@ -62,7 +62,6 @@ I_total <- function(fitness, type = c("W", "w")) {
 #' 
 #' @examples
 #'
-
 #' # load the dataset
 #' data(BumpusMales)
 

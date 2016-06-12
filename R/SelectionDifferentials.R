@@ -189,7 +189,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
         diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
         diffs$Method <- "dCov"
         diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal)
+        return(diffsfinal[-1])
       }
       
       ## method 2: Based on before-after equations from Table 1 in Brodie et al. 1995
@@ -215,7 +215,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
         diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
         diffs$Method <- "dBeforeAfter"
         diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal)
+        return(diffsfinal[-1])
       }
       
       ## method 3: matrix algebra approach from Lande and Arnold (1983)
@@ -239,7 +239,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
           diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
           diffs$Method <- "dMatrix"
           diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-          return(diffsfinal)
+          return(diffsfinal[-1])
       }
       
       dReg <- function(w,z) {
@@ -283,7 +283,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
         diffs <- data.frame(t(c(dReg_linear, dReg_nonlinear)), check.names = FALSE)
         diffs$Method <- "dReg"
         diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal)
+        return(diffsfinal[-1])
       }
       
       if (method == 1) {
@@ -301,45 +301,66 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 }
   
 
-## attempting to create function to estimate confidence intervals
-require(boot)
-require(matrixStats)
-CI <- function(w, z, conf = 0.95, R = 2000) {
-  dCov <- function(w, z) {
-    d <- cbind(w,z)
-    dCov_linear <- as.numeric(cov(w, z))
-    if (ncol(d) > 2) {
-      z_dev <- sapply(z, function(x) x - mean(x))
-      dCov_nonlinear <- cov(w, multiprod(z_dev))
-      diffs <- c(dCov_linear, dCov_nonlinear)
-      fullNames <- c(colnames(z), colnames(dCov_nonlinear))
-      names(diffs) <- fullNames
-    } else {
-      z_dev <- z - colMeans(z)
-      dCov_quad <- cov(w, z_dev^2)
-      diffs <- c(dCov_linear, dCov_quad)
-      names(diffs) <- c("z", "z^2")
-    }
-    diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
-    diffs$Method <- "dCov"
-    diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-    return(diffsfinal)
-  }
+### BOOTSTRAPPING STANDARD ERRORS AND CONFIDENCE INTERVALS FOR DIFFERENTIALS ###
+#' @title Use bootstrapping to estimate standard errors and confidence intervals for selection differentials
+#'
+#' @name differentials_stats
+#' 
+#' @description \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the covariance method of the \code{differentials} function in \code{psa}.
+#'
+#' @usage differentials_bootstats(w, z, conf = 0.95, R = 2000)
+#'
+#' @param \code{w} Relative fitness.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted.
+#' @param \code{conf} Confidence interval. See boot::boot.ci for more details.
+#' @param \code{R} Number of bootstrap replicates. See boot::boot for more details.
+#'
+#' @section Output:  \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
+#' @section Output: \code{ci} contains the confidence intervals for three bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
 
-# This function works but the stndard errors are higher than what I get if I do a simple linear regression for each of the traits  
-  df <- data.frame(BumpusMales$w,data.frame(scale(BumpusMales[,3:11])))
-    dCovFunc <- function(df,i){
-      df <- df[i,]
-      dCov(df[i,1], df[i,-1])
-      }
-    boot.out <- boot(data = df, dCovFunc, R = 2000)
+#'
+#' @return \code{differentials} returns a list of two objects. 
+#'
+#'
+#' @examples
+#' data(BumpusMales)
+#'
+#' differentials_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]))
+#' @import boot
+#' @export
+
+differentials_bootstats <- function(w, z, conf = 0.95, R = 2000) {
+  #df <- data.frame(w = BumpusMales$w, scale(BumpusMales[,3:11]))
+  df <- data.frame(w, z, stringsAsFactors = FALSE)
     
     differentialsFunc <- function(df, i) {
       d <- df[i,]
-      mod <- differentials(d[,1], d[i,-1], "all")
+      mod <- t(differentials(d[i,1], d[i,-1], method = 1))
       return(mod)
     }
-    boot.out <- boot(data = df, differentialsFunc, R = 2000)
-
-  return(boot.out)
+    
+    boot.out <- boot(data = df, differentialsFunc, R = R)
+    
+    trait.names = row.names(boot.out$t0)
+    n.traits = length(trait.names)
+    ci = numeric(n.traits * 8); dim(ci)<-c(n.traits,8)
+    ci.types = c("norm","basic", "perc", "bca")
+    for (i in 1:n.traits) {
+      y = boot.ci(boot.out, conf = conf, type = ci.types ,index = i)
+      ci[i,] = c(y$norm[2:3],y$basic[4:5],y$perc[4:5],y$bca[4:5])
+    }
+    ci = data.frame(ci)
+    rownames(ci) = trait.names
+    int = c((1-conf)/2,1-(1-conf)/2)
+    v = NULL
+    for (i in 1:length(ci.types)) {
+      for (j in 1:2) {
+        v = c(v,paste(ci.types[i],int[j]))
+      }}
+    colnames(ci) = v
+    output <- list(
+      bootoutput = boot.out,
+      ci = ci
+    )
+  return(output)
 }
