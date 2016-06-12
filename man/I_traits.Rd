@@ -19,11 +19,11 @@ I_traits(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cross"))
 \code{I_traits} returns a matrix of numeric values. 
 
 \itemize{
-   \item \code{B:} A vector of selection gradients (normalized to mean of zero and unit variance)
+   \item \code{B:} A vector of selection gradients (standardized to mean of zero and unit variance)
    \item \code{b:} selection differential without imputed variance or weights
    \item \code{q:} Weights to be applied to the phenotypic traits (defaults to 1).
    \item \code{var:} Imputed variance due to missing data, divided by the weight.
-   \item \code{s:} A vector of selection differentials (normalized to mean of zero and unit variance)
+   \item \code{s:} A vector of selection differentials (standardized to mean of zero and unit variance)
    \item \code{i:} Additive opportunity for selection for an individual phenotypic trait. 
    \item \code{I.model:} Opportunity of selection, based on the model of phenotypic traits given. 
    \item \code{I.total:} The total opportunity for selection, based on weighted variance of fitness.
