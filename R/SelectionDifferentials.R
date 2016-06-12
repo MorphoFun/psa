@@ -304,7 +304,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 ### BOOTSTRAPPING STANDARD ERRORS AND CONFIDENCE INTERVALS FOR DIFFERENTIALS ###
 #' @title Use bootstrapping to estimate standard errors and confidence intervals for selection differentials
 #'
-#' @name differentials_stats
+#' @name differentials_bootstats
 #' 
 #' @description \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the covariance method of the \code{differentials} function in \code{psa}.
 #'
