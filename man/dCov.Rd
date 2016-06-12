@@ -15,7 +15,7 @@ dCov(w, z)
 \code{dCov} returns a vector of numeric values.
 }
 \description{
-\code{dCov} estimates the linear and nonlinear selection differentials for one or more phenotypic traits, based on descriptions in Phillips and Arnold (1989). Estimations are based on phenotypic traits that have been normalized to a mean of zero and unit variance. If one phenotypic trait is input, linear and quadratic selection differentials will be output. If more than one phenotypic trait is input, correlational selection differentials will also be output.
+\code{dCov} estimates the linear and nonlinear selection differentials for one or more phenotypic traits, based on descriptions in Phillips and Arnold (1989). Estimations are based on phenotypic traits that have been standardized to a mean of zero and unit variance. If one phenotypic trait is input, linear and quadratic selection differentials will be output. If more than one phenotypic trait is input, correlational selection differentials will also be output.
 }
 \section{Output}{
   \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z}, using the approach described in Table 1 of Phillips and Arnold (1989).

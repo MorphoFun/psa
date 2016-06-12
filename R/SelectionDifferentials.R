@@ -57,7 +57,7 @@ multiprod <- function(x) {
 #'
 #' @name dCov
 #' 
-#' @description \code{dCov} estimates the linear and nonlinear selection differentials for one or more phenotypic traits, based on descriptions in Phillips and Arnold (1989). Estimations are based on phenotypic traits that have been normalized to a mean of zero and unit variance. If one phenotypic trait is input, linear and quadratic selection differentials will be output. If more than one phenotypic trait is input, correlational selection differentials will also be output.
+#' @description \code{dCov} estimates the linear and nonlinear selection differentials for one or more phenotypic traits, based on descriptions in Phillips and Arnold (1989). Estimations are based on phenotypic traits that have been standardized to a mean of zero and unit variance. If one phenotypic trait is input, linear and quadratic selection differentials will be output. If more than one phenotypic trait is input, correlational selection differentials will also be output.
 #'
 #' @usage dCov(w, z)
 #'
@@ -130,12 +130,12 @@ dCov <- function(w, z) {
 #' 
 #' @description \code{differentials} allows the user to evaluate how different methods for calculating phenotypic section differentials influence the output and, thus, the interpretation of indirect selection on phenotypic traits. 
 #'
-#' @usage differentials(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ...)
+#' @usage differentials(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, ...)
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
 #' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
-#' @param \code{normalize} Indicate whether phenotypic trait data should be normalized to a mean of zero and unit variance.
+#' @param \code{standardize} Indicate whether phenotypic trait data should be standardized to a mean of zero and unit variance.
 #'
 #' @section Output:  \code{dCov} is the selection differential calculated from the covariance between the relative fitness, \code{w}, and each phenotypic trait \code{z} (Lande and Arnold 1983).
 #' @section Output:  \code{dBeforeAfter} is the selection differential calculated as  as described in Brodie et al. (1995). 
@@ -157,7 +157,7 @@ dCov <- function(w, z) {
 
 
 
-differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ...) {
+differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, ...) {
   
   isScale <- function(x) {
     ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
@@ -168,7 +168,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), normalize = TRUE, ..
     }
   }
   
-  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  ifelse(isTRUE(standardize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
   
       ## method 1: Based on covariance equations from Table 1 of Brodie et al. 1995
       dCov <- function(w, z) {
@@ -326,14 +326,20 @@ CI <- function(w, z, conf = 0.95, R = 2000) {
     return(diffsfinal)
   }
 
-# Yay! It works to produce the standard errors for at leave dCov() for now; matches up fairly well with the SE's that are produced from dReg; now need to expand this function to cover the other options in differentials, and then add this function to diffferentials or create a new one
-    df <- data.frame(BumpusMales$w,data.frame(scale(BumpusMales[,3:11])))
+# This function works but the stndard errors are higher than what I get if I do a simple linear regression for each of the traits  
+  df <- data.frame(BumpusMales$w,data.frame(scale(BumpusMales[,3:11])))
     dCovFunc <- function(df,i){
       df <- df[i,]
-      dCov(df[,1], df[i,-c(1)])
+      dCov(df[i,1], df[i,-1])
       }
-    boot.out <- boot(data = df, dCovFunc, R = 500)
-
+    boot.out <- boot(data = df, dCovFunc, R = 2000)
+    
+    differentialsFunc <- function(df, i) {
+      d <- df[i,]
+      mod <- differentials(d[,1], d[i,-1], "all")
+      return(mod)
+    }
+    boot.out <- boot(data = df, differentialsFunc, R = 2000)
 
   return(boot.out)
 }

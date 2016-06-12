@@ -584,12 +584,13 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #' @description \code{gradients} estimates the linear and nonlinear selection gradients, based on the Lande and Arnold (1983) paper. 
 #' 
 #' @param \code{w} Relative fitness.
-#' @param \code{z} Phenotypic trait(s). Character values are not accepted.
-#' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
-#' @param \code{normalize} Indicate whether phenotypic trait data should be normalized to a mean of zero and unit variance.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted. Input should be raw/unstandardized/un-normalized data, so the data can be normalized correctly for the P star matrix later.
+#' @param \code{method}: method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
+#' @param \code{centered} Indicate whether phenotypic trait data should be centered to a mean of zero
+#' @param \code{scaled} Indicate whether phenotypic trait data should be scaled to unit variance.
 
 #'
-#' @details Ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The matrix algebra approach estimates the linear and nonlinear selection coefficients using equations outlined in Lande and Arnold (1983): linear selection differential (s) is based on eqation 4, linear selection gradient (beta) is equation 17, nonlinear selection differential (C) is equation 13b, and nonlinear selection gradient (gamma) is equation 14a.
+#' @details Method 2 ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The matrix algebra approach estimates the linear and nonlinear selection coefficients using equations outlined in Lande and Arnold (1983): linear selection differential (s) is based on eqation 4, linear selection gradient (beta) is equation 17, nonlinear selection differential (C) is equation 13b, and nonlinear selection gradient (gamma) is equation 14a.
 #'
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
@@ -601,7 +602,7 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #' gradients(BumpusMales$w, BumpusMales[,3:11], "all")
 #' @export 
 
-gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, printmod = FALSE, ...) {
+gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...) {
   
   isScale <- function(x) {
     ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
@@ -613,13 +614,14 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, printmod =
   }
   z_raw <- z
   
-  ifelse(isTRUE(normalize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  ifelse(isScale(z) == FALSE, z <- data.frame(scale(z, center = centered, scale = scaled), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
+  
   
   # nonlinear selection differential
   # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
   gMatrix <- function(w,z) {
     # linear selection differential
-    s <- cov(w,z)
+    s <- t(cov(w,z))
     
     # phenotypic variance-covariance matrix
     P <- cov(z)
@@ -627,7 +629,7 @@ gradients <- function(w, z, method = c(1,2, "all"), normalize = TRUE, printmod =
     # linear selection gradient - P matrix
     beta_matrix <- solve(P) %*% as.vector(s)
     
-    ssT <- as.vector(s) %*% as.vector(t(s))
+    ssT <- s %*% t(s)
     P <- cov(as.matrix(z))
     rawdata <- cbind(w, z_raw)
     P_star <- cov(scale(subset(rawdata, w > 0, select = c(names(z))))) 

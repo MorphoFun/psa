@@ -57,9 +57,9 @@ z$Weight_g <- z$Weight_g^(1/3)
 
 Parameter                                        | Formula
 -------------------------------------------------|----------------------------------------
-linear selection differential ($S_i$)            | cov(w, $\bar{z}$)
-quadratic selection differential ($C_{i,i}$)     | cov(w, (z - $\bar{z})^2$)
-correlational selection differential ($C_{i,j}$) | cov(w, (zi - $\bar{z_i})(z_j - \bar{z_j}$))
+linear selection differential ($S_i$)            | $cov(w, \bar{z}$)
+quadratic selection differential ($C_{i,i}$)     | $cov(w, (z - \bar{z})^2$)
+correlational selection differential ($C_{i,j}$) | $cov(w, (z_i - \bar{z_i})(z_j - \bar{z_j}$))
 
 See Brodie et al. 1995 for a more detailed description.  
 
@@ -74,16 +74,19 @@ dCov outputs the linear and nonlinear selection differentials. The terms ending 
   
 #### Are all methods to estimate selection differentials equivalent?  
 The short answer is: no. To illustrate this, we can use the psa::differentials function to compare how different methods to quantify selection differentials impact the results.  
-```{r}
+```{r, out.width = '\\maxwidth'}
 # Look up the documentation for dCompare
 ?differentials
 
 # the default is to estimate the differentials with data that have been normalized to a mean of zero and unit variance
 bm <- differentials(w, z, "all")
 
+# melt the results based on the method used to compute the estimates
 library(reshape2)
-melt_bm <- melt(bm)
+melt_bm <- melt(bm, id = "Method")
+```
 
+```{r, fig.width=11, fig.height=8}
 # plot the data
 # see docs.ggplot2.org/current/geom_point.html
 ggplot(melt_bm, aes(Method, value, fill = Method)) + 
