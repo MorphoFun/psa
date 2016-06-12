@@ -59,6 +59,17 @@ I_total <- function(fitness, type = c("W", "w")) {
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Moorad JA, Wade MJ. 2013. Selection gradients, the opportunity for selection, and the coefficient of determination. \emph{The American Naturalist} 181(3): 291-300. \url{http://www.journals.uchicago.edu/doi/abs/10.1086/669158}
 #' @references Phillips PC, Arnold SJ. 1989. Visualizing multivariate selection. \emph{Evolution} 43(6): 1209-1222. \url{http://www.jstor.org/stable/2409357}
+#' 
+#' @examples
+#'
+
+#' # load the dataset
+#' data(BumpusMales)
+
+#' # Calculate the opportunity for selection for the total variation in fitness and variation from phenotypic traits
+#' I_traits(BumpusMales$w, BumpusMales[,3:11], fitType = "rel", zType = "long")
+#' 
+#' 
 #' @import matrixStats
 #' @import corpcor
 #' @export
@@ -127,11 +138,4 @@ I_traits<-function(fitness, z, fitType = c("rel", "abs"), zType = c("long", "cro
   unimputed.var = imputed.var/q
   data.frame(B = X$B, b = b, q = q, var = unimputed.var, s = b * q * unimputed.var, i = B * q * unimputed.var * b, I.model = sum(B * q * unimputed.var * b, na.rm = TRUE), I.total = wt.moments(x = w,w = wt)$var, row.names = c(names(z), names(nonlinz)))}
 
-#' @examples
-#'
 
-#' # load the dataset
-#' data(BumpusMales)
-
-#' # Calculate the opportunity for selection for the total variation in fitness and variation from phenotypic traits
-#' I_traits(BumpusMales$w, BumpusMales[,3:11], fitType = "rel", zType = "long")
