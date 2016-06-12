@@ -287,13 +287,13 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
       }
       
       if (method == 1) {
-        output <- data.frame(t(dCov(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
+        output <- data.frame((dCov(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
       } else if(method == 2) {
-        output <- data.frame(t(dBeforeAfter(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
+        output <- data.frame((dBeforeAfter(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
       } else if(method == 3) {
-        output <- data.frame(t(dMatrix(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
+        output <- data.frame((dMatrix(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
       } else if(method == 4) {
-        output <- data.frame(t(dReg(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
+        output <- data.frame((dReg(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
       } else if(method == "all") {
         output <- data.frame((rbind(dCov = dCov(w,z), dBeforeAfter = dBeforeAfter(w,z), dMatrix = dMatrix(w,z), dReg = dReg(w,z))), row.names = NULL, stringsAsFactors = FALSE, check.names = FALSE)
       }
