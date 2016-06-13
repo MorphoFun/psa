@@ -312,8 +312,8 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
-#' @param \code{conf} Confidence interval. See boot::boot.ci for more details.
-#' @param \code{R} Number of bootstrap replicates. See boot::boot for more details.
+#' @param \code{conf} Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.
+#' @param \code{R} Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.
 #'
 #' @section Output:  \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
 #' @section Output: \code{ci} contains the confidence intervals for three bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
