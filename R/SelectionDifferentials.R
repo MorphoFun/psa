@@ -317,7 +317,6 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #'
 #' @section Output:  \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
 #' @section Output: \code{ci} contains the confidence intervals for three bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
-
 #'
 #' @return \code{differentials} returns a list of two objects. 
 #'
@@ -341,6 +340,11 @@ differentials_bootstats <- function(w, z, conf = 0.95, R = 2000) {
     
     boot.out <- boot(data = df, differentialsFunc, R = R)
     
+    booted_se <- NULL
+    for (i in 1:length(boot.out$t0)) {
+      booted_se[i] <- sd(boot.out$t[,i])
+    }
+    
     trait.names = row.names(boot.out$t0)
     n.traits = length(trait.names)
     ci = numeric(n.traits * 8); dim(ci)<-c(n.traits,8)
@@ -360,6 +364,7 @@ differentials_bootstats <- function(w, z, conf = 0.95, R = 2000) {
     colnames(ci) = v
     output <- list(
       bootoutput = boot.out,
+      se = booted_se,
       ci = ci
     )
   return(output)
