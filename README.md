@@ -1,4 +1,4 @@
-### Phenotypic Selection Analysis tools (psa)
+# Phenotypic Selection Analysis tools (psa)
 
 ## Description
 ```psa``` is a package with functions to estimate the strength and mode and phenotypic selection. 
@@ -12,12 +12,16 @@ Some of the main features include:
 * Options to compare selection coefficients and standard errors from different methods to evaluate robustness of estimates
 * Option to evaluate how choice of traits influences estimates of selection gradients, when using the OLS regression
 
+## Vignettes
+Easy tutorials on using some of the ```psa``` functions are available through the following vignettes:
+* How to estimate linear and nonlinear selection differentials, and comparing output from different methods
+* How to estimate linear and nonliear selection gradients, and comparing output from different methods
 
 ## Installation
 ```psa``` is currently in a development version, and can be access via:
 
 ```
 library(devtools)
-install_github("MorphoFun/psa"")
+install_github("MorphoFun/psa", build_vignettes = TRUE)
 ```
 
