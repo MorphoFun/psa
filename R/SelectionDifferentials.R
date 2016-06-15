@@ -328,7 +328,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #' @import boot
 #' @export
 
-differentials_bootstats <- function(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4) ) {
+differentials_bootstats <- function(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4)) {
   df <- data.frame(w, z, stringsAsFactors = FALSE)
     
     differentialsFunc <- function(df, i) {
