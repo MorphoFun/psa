@@ -295,7 +295,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
       } else if(method == 4) {
         output <- data.frame((dReg(w,z)), check.names = FALSE, stringsAsFactors = FALSE)
       } else if(method == "all") {
-        output <- data.frame((rbind(dCov = dCov(w,z), dBeforeAfter = dBeforeAfter(w,z), dMatrix = dMatrix(w,z), dReg = dReg(w,z))), row.names = NULL, stringsAsFactors = FALSE, check.names = FALSE)
+        output <- data.frame(dCov = t(dCov(w,z)), dBeforeAfter = t(dBeforeAfter(w,z)), dMatrix = t(dMatrix(w,z)), dReg = t(dReg(w,z)), row.names = NULL, stringsAsFactors = FALSE, check.names = FALSE)
       }
       return(output)
 }
