@@ -306,7 +306,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #'
 #' @name differentials_bootstats
 #' 
-#' @description \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the covariance method of the \code{differentials} function in \code{psa}.
+#' @description \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the \code{differentials} function in \code{psa}.
 #'
 #' @usage differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 #'
@@ -316,9 +316,9 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #' @param \code{R} Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.
 #'
 #' @section Output:  \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
-#' @section Output: \code{ci} contains the confidence intervals for three bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
+#' @section Output: \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
 #'
-#' @return \code{differentials} returns a list of two objects. 
+#' @return \code{differentials} returns a list of three objects (boot output, standard errors, and confidence intervals).
 #'
 #'
 #' @examples

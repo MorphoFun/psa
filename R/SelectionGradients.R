@@ -685,3 +685,73 @@ return(output)
 
 }
 
+
+
+### BOOTSTRAPPING STANDARD ERRORS AND CONFIDENCE INTERVALS FOR SELECTION GRADIENTS ###
+#' @title Use bootstrapping to estimate standard errors and confidence intervals for selection gradients
+#'
+#' @name gradients_bootstats
+#' 
+#' @description \code{gradients_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection gradients that are estimated using the \code{gradients} function in \code{psa}.
+#'
+#' @usage gradients_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2))
+#'
+#' @param \code{w} Relative fitness.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted.
+#' @param \code{conf} Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.
+#' @param \code{R} Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.
+#'
+#' @section Output:  \code{bootoutput} contains the estimates for the phenotypic selection gradients, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
+#' @section Output: \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
+#'
+#' @return \code{gradients} returns a list of three objects (boot output, standard errors, and confidence intervals).
+#'
+#'
+#' @examples
+#' data(BumpusMales)
+#'
+#' gradients_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]), method = 1)
+#' @import boot
+#' @export
+
+
+gradients_bootstats <- function(w, z, conf = 0.95, R = 2000, method = c(1,2)) {
+  df <- data.frame(w, z, stringsAsFactors = FALSE)
+  
+  gradientsFunc <- function(df, i) {
+    d <- df[i,]
+    mod <- t(gradients(d[i,1], d[i,-1], method = method))
+    return(mod)
+  }
+  
+  boot.out <- boot(data = df, gradientsFunc, R = R)
+  
+  booted_se <- NULL
+  for (i in 1:length(boot.out$t0)) {
+    booted_se[i] <- sd(boot.out$t[,i])
+  }
+  
+  trait.names = row.names(boot.out$t0)
+  n.traits = length(trait.names)
+  ci = numeric(n.traits * 8); dim(ci)<-c(n.traits,8)
+  ci.types = c("norm","basic", "perc", "bca")
+  for (i in 1:n.traits) {
+    y = boot.ci(boot.out, conf = conf, type = ci.types ,index = i)
+    ci[i,] = c(y$norm[2:3],y$basic[4:5],y$perc[4:5],y$bca[4:5])
+  }
+  ci = data.frame(ci)
+  rownames(ci) = trait.names
+  int = c((1-conf)/2,1-(1-conf)/2)
+  v = NULL
+  for (i in 1:length(ci.types)) {
+    for (j in 1:2) {
+      v = c(v,paste(ci.types[i],int[j]))
+    }}
+  colnames(ci) = v
+  output <- list(
+    bootoutput = boot.out,
+    se = booted_se,
+    ci = ci
+  )
+  return(output)
+}
