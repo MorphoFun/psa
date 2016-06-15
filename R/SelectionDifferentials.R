@@ -308,7 +308,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #' 
 #' @description \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the covariance method of the \code{differentials} function in \code{psa}.
 #'
-#' @usage differentials_bootstats(w, z, conf = 0.95, R = 2000)
+#' @usage differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
@@ -324,7 +324,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
 #' @examples
 #' data(BumpusMales)
 #'
-#' differentials_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]))
+#' differentials_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]), method = 1)
 #' @import boot
 #' @export
 
@@ -333,7 +333,7 @@ differentials_bootstats <- function(w, z, conf = 0.95, R = 2000, method = c(1,2,
     
     differentialsFunc <- function(df, i) {
       d <- df[i,]
-      mod <- t(differentials(d[i,1], d[i,-1], method = 1))
+      mod <- t(differentials(d[i,1], d[i,-1], method = method))
       return(mod)
     }
     
