@@ -7,7 +7,6 @@ Authors@R: person("Sandy", "Kawano", email = "sandy.kawano@gmail.com", role = c(
 Maintainer: Sandy Kawano <sandy.kawano@gmail.com>
 Imports:
     boot, corpcor, lme4, matrixStats
-
 Description: Various tools to estimate the strength and mode of linear and nonlinear phenotypic selection.
 License: GPL-2
 BugReports: https://github.com/MorphoFun/psa/issues
