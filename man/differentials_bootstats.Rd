@@ -11,9 +11,9 @@ differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 
 \item{\code{z}}{Phenotypic trait(s). Character values are not accepted.}
 
-\item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.}
+\item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See ?boot.ci for more details.}
 
-\item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.}
+\item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See ?boot for more details.}
 
 \item{\code{method}}{Method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait.}
 }
