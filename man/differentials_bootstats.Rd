@@ -18,13 +18,15 @@ differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 \item{\code{method}}{Method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates.}
 }
 \value{
-\code{differentials} returns a list of three objects (boot output, standard errors, and confidence intervals).
+\code{differentials_bootstats} returns a list of three objects (boot output, standard errors, and confidence intervals).
 }
 \description{
 \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the \code{differentials} function in \code{psa}.
 }
 \section{Output}{
-  \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
+ \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
+
+ \code{se} contains the bootstrapped standard errors.
 
  \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
 }
