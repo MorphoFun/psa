@@ -4,31 +4,31 @@
 \alias{differentials_bootstats}
 \title{Use bootstrapping to estimate standard errors and confidence intervals for selection differentials}
 \usage{
-differentials_bootstats(w, z, conf = 0.95, R = 2000)
+differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 }
 \arguments{
 \item{\code{w}}{Relative fitness.}
 
 \item{\code{z}}{Phenotypic trait(s). Character values are not accepted.}
 
-\item{\code{conf}}{Confidence interval. See boot::boot.ci for more details.}
+\item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.}
 
-\item{\code{R}}{Number of bootstrap replicates. See boot::boot for more details.}
+\item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.}
 }
 \value{
-\code{differentials} returns a list of two objects.
+\code{differentials} returns a list of three objects (boot output, standard errors, and confidence intervals).
 }
 \description{
-\code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the covariance method of the \code{differentials} function in \code{psa}.
+\code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the \code{differentials} function in \code{psa}.
 }
 \section{Output}{
   \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
 
- \code{ci} contains the confidence intervals for three bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
+ \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
 }
 \examples{
 data(BumpusMales)
 
-differentials_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]))
+differentials_bootstats(BumpusMales$w, scale(BumpusMales[,3:11]), method = 1)
 }
 

@@ -580,7 +580,7 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #'
 #' @name gradients
 #'
-#' @usage gradients(w, z, method = c(1,2, "all"), normalize = TRUE, ...)
+#' @usage gradients(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...)
 #' @description \code{gradients} estimates the linear and nonlinear selection gradients, based on the Lande and Arnold (1983) paper. 
 #' 
 #' @param \code{w} Relative fitness.

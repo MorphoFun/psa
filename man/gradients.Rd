@@ -4,7 +4,7 @@
 \alias{gradients}
 \title{Estimating phenotypic selection gradients}
 \usage{
-gradients(w, z, method = c(1,2, "all"), normalize = TRUE, ...)
+gradients(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...)
 }
 \arguments{
 \item{\code{w}}{Relative fitness.}

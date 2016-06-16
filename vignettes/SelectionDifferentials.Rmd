@@ -63,27 +63,50 @@ correlational selection differential ($C_{i,j}$) | $cov(w, (z_i - \bar{z_i})(z_j
 
 See Brodie et al. 1995 for a more detailed description.  
 
-#### Calculate the selection differentials using psa::dCov()  
-The phenotypic traits (z) will automatically be centered to a mean of zero and scaled to unit variance, as part of the dCov function.
+#### Calculate the selection differentials 
+The phenotypic traits (z) will automatically be centered to a mean of zero and scaled to unit variance. The differentials() function outputs the linear and nonlinear selection differentials. The terms ending in ".Sq" are the quadratic selection differentials, and the interactions are the correlational selection differentials.  
 ```{r}
-d <- dCov(w, z)
-d
+# Look up the documentation for differentials
+?differentials
+
+# Estimate the differentials using only the covariance method
+bm_dCov <- differentials(w, z, 1)
+
+# Look up the documentation for differentials_bootstats for estimating the standard errors and confidence intervals, using the covariance method for estimating the selection differentials
+?differentials_bootstats
+
+set.seed(123)
+bm_booted_dCov <- differentials_bootstats(w, z, method = 1)
+
+# The standard errors can be easily extracted from $se
+bm_booted_dCov$se
+
 ```
-dCov outputs the linear and nonlinear selection differentials. The terms ending in ".Sq" are the quadratic selection differentials, and the interactions are the correlational selection differentials.  
-  
   
 #### Are all methods to estimate selection differentials equivalent?  
 The short answer is: no. To illustrate this, we can use the psa::differentials function to compare how different methods to quantify selection differentials impact the results.  
 ```{r, out.width = '\\maxwidth'}
-# Look up the documentation for dCompare
-?differentials
+# Compare the differentials using different methods
+bm_all <- differentials(w, z, "all")
 
-# the default is to estimate the differentials with data that have been normalized to a mean of zero and unit variance
-bm <- differentials(w, z, "all")
+# Compare the standard errors of the differentials that were estimated with different methods
+set.seed(123)
+bm_booted_dBeforeAfter <- differentials_bootstats(w,z,method = 2)
+bm_booted_dMatrix <- differentials_bootstats(w,z,method = 3)
+bm_booted_dReg <- differentials_bootstats(w,z,method = 4)
+
+bm_se_all <- data.frame(rbind(dCov = bm_booted_dCov$se, dBeforeAfter = bm_booted_dBeforeAfter$se, dMatrix = bm_booted_dMatrix$se, dReg = bm_booted_dReg$se), stringsAsFactors = FALSE)
+names(bm_se_all) <- names(bm_dCov)
+bm_se_all$Method = row.names(bm_se_all)
+
 
 # melt the results based on the method used to compute the estimates
 library(reshape2)
-melt_bm <- melt(bm, id = "Method")
+melt_bm <- melt(bm_all, id = "Method")
+melt_bm_se <- melt(bm_se_all, id = )
+
+limits <- aes(ymax = melt_bm$value + melt_bm_se$value, ymin = melt_bm$value - melt_bm_se$value)
+
 ```
 
 ```{r, fig.width=11, fig.height=8}
@@ -91,10 +114,11 @@ melt_bm <- melt(bm, id = "Method")
 # see docs.ggplot2.org/current/geom_point.html
 ggplot(melt_bm, aes(Method, value, fill = Method)) + 
   geom_point(aes(colour = factor(Method))) + 
+  geom_errorbar(limits, width = 0.2) +
   # once I have the se's try:   geom_point(aes(colour = factor(Method), size = se)) + 
   facet_wrap(~variable) + 
   geom_abline(intercept = 0, slope = 0, colour = "gray") +
-  labs(title = "Selection differentials for male Bumpus datas") + 
+  labs(title = "Selection differentials for male Bumpus data") + 
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
   theme(legend.position = "none",
