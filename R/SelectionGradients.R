@@ -698,7 +698,7 @@ return(output)
 #'
 #' @param \code{w} Relative fitness.
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted.
-#' @param \code{conf} Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.
+#' @param \code{conf} Confidence interval, with 95 percent confidence interval set as a default. See \code{boot.ci} for more details.
 #' @param \code{R} Number of bootstrap replicates. 2000 is set as the default. See ?boot for more details.
 #' @param \code{method} Method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
 #'

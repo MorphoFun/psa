@@ -11,7 +11,7 @@ gradients_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2))
 
 \item{\code{z}}{Phenotypic trait(s). Character values are not accepted.}
 
-\item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.}
+\item{\code{conf}}{Confidence interval, with 95 percent confidence interval set as a default. See \code{boot.ci} for more details.}
 
 \item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See ?boot for more details.}
 
