@@ -187,9 +187,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
           names(diffs) <- c("z", "z^2")
         }
         diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
-        diffs$Method <- "dCov"
-        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal[-1])
+        return(diffs)
       }
       
       ## method 2: Based on before-after equations from Table 1 in Brodie et al. 1995
@@ -213,9 +211,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
           names(diffs) <- c("z", "z^2")
         }
         diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
-        diffs$Method <- "dBeforeAfter"
-        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal[-1])
+        return(diffs)
       }
       
       ## method 3: matrix algebra approach from Lande and Arnold (1983)
@@ -237,9 +233,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
             names(diffs) <- c("z", "z^2")
           }
           diffs <- data.frame(t(diffs), stringsAsFactors = FALSE, check.names = FALSE)
-          diffs$Method <- "dMatrix"
-          diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-          return(diffsfinal[-1])
+          return(diffs)
       }
       
       dReg <- function(w,z) {
@@ -281,9 +275,7 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
           names(dReg_nonlinear) <- "z.Sq"
         }
         diffs <- data.frame(t(c(dReg_linear, dReg_nonlinear)), check.names = FALSE)
-        diffs$Method <- "dReg"
-        diffsfinal <- diffs[,c(ncol(diffs), 1:(ncol(diffs)-1))]
-        return(diffsfinal[-1])
+        return(diffs)
       }
       
       if (method == 1) {
