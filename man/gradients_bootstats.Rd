@@ -14,6 +14,8 @@ gradients_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2))
 \item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.}
 
 \item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.}
+
+\item{\code{method}}{Method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates.}
 }
 \value{
 \code{gradients} returns a list of three objects (boot output, standard errors, and confidence intervals).
