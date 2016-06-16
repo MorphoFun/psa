@@ -13,7 +13,7 @@ gradients_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2))
 
 \item{\code{conf}}{Confidence interval. 95% confidence interval is set as a default. See boot::boot.ci for more details.}
 
-\item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See boot::boot for more details.}
+\item{\code{R}}{Number of bootstrap replicates. 2000 is set as the default. See ?boot for more details.}
 
 \item{\code{method}}{Method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates.}
 }
@@ -24,7 +24,7 @@ gradients_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2))
 \code{gradients_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection gradients that are estimated using the \code{gradients} function in \code{psa}.
 }
 \section{Output}{
-  \code{bootoutput} contains the estimates for the phenotypic selection gradients, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
+ \code{bootoutput} contains the estimates for the phenotypic selection gradients, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details)
 
  \code{se} contains the bootstrapped standard errors.
 
