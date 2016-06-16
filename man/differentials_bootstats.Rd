@@ -24,11 +24,11 @@ differentials_bootstats(w, z, conf = 0.95, R = 2000, method = c(1,2,3,4))
 \code{differentials_bootstats} allows the user to calculate the standard deviations and confidence intervals for phenotypic selection differientials that are estimated using the \code{differentials} function in \code{psa}.
 }
 \section{Output}{
- \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in boot::boot for more details).
+ \code{bootoutput} contains the estimates for the phenotypic selection differentials, bias, and standard errors using an "ordinary" resampling method (see the "sim" option in ?boot for more details).
 
  \code{se} contains the bootstrapped standard errors.
 
- \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See boot::boot.ci for more details.
+ \code{ci} contains the confidence intervals for four bootstrapping methods (basic, student, percent, and bca). See ?boot.ci for more details.
 }
 \examples{
 data(BumpusMales)
