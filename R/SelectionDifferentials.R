@@ -168,6 +168,12 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
     }
   }
   
+  # Standardizing the "after" data separately
+  df_raw <- cbind(w, z)
+  df_raw_after <- subset(df_raw, w > 0, select = c(names(z)))
+  ifelse(isTRUE(standardize) && isScale(z) == FALSE, z_after <- data.frame(scale(df_raw_after), stringsAsFactors = FALSE), z_after <- data.frame(df_raw_after, stringsAsFactors = FALSE))
+  
+  
   ifelse(isTRUE(standardize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
   
       ## method 1: Based on covariance equations from Table 1 of Brodie et al. 1995
@@ -196,7 +202,6 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
         z_before <- data.frame(z, stringsAsFactors = FALSE) 
         
         if (ncol(d) >2) {
-          z_after <- subset(d, w > 0, select = c(names(z)))
           dBA_linear <- sapply(z_after, function(x) mean(x)) - sapply(z, function(x) mean(x))
           dBA_quad <- diag(var(z_after)) - diag(var(z_before)) + dBA_linear^2
           dBA_corr <- cov(z_after)[lower.tri(cov(z_after))] - cov(z_before)[lower.tri(cov(z_before))] + tcrossprod(dBA_linear)[lower.tri(tcrossprod(dBA_linear))]
@@ -217,11 +222,11 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
       ## method 3: matrix algebra approach from Lande and Arnold (1983)
       dMatrix <- function(w,z) {
           d <- cbind(w,z)
-          s <- cov(w,z)
-          ssT <- as.vector(s) * as.vector(t(s))
+          s <- as.numeric(cov(w,z))
+          ssT <- as.matrix(s) %*% as.matrix(t(s))
           P <- cov(as.matrix(z))
           if (ncol(d) > 2) {
-            P_star <- cov(subset(d, w > 0, select = c(names(z)))) 
+            P_star <- cov(z_after) 
             C = P_star - P + ssT
             diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
             fullNames <- c(names(z), names(multiprod(z)))
