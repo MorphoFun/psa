@@ -620,6 +620,8 @@ gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TR
   # nonlinear selection differential
   # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
   gMatrix <- function(w,z) {
+    d <- cbind(w, z)
+    
     # linear selection differential
     s <- t(cov(w,z))
     
@@ -630,10 +632,7 @@ gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TR
     beta_matrix <- solve(P) %*% as.vector(s)
     
     ssT <- s %*% t(s)
-    P <- cov(as.matrix(z))
-    rawdata <- cbind(w, z_raw)
-    P_star <- cov(scale(subset(rawdata, w > 0, select = c(names(z))))) 
-
+    P_star <- cov(scale(subset(d, w > 0, select = c(names(z))))) 
       C = P_star - P + as.numeric(ssT)
       diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
       fullNames <- c(names(z), names(multiprod(z)))

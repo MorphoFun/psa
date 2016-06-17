@@ -95,15 +95,13 @@ bm_booted_dBeforeAfter <- differentials_bootstats(w,z,method = 2)
 bm_booted_dMatrix <- differentials_bootstats(w,z,method = 3)
 bm_booted_dReg <- differentials_bootstats(w,z,method = 4)
 
-bm_se_all <- data.frame(rbind(dCov = bm_booted_dCov$se, dBeforeAfter = bm_booted_dBeforeAfter$se, dMatrix = bm_booted_dMatrix$se, dReg = bm_booted_dReg$se), stringsAsFactors = FALSE)
-names(bm_se_all) <- names(bm_dCov)
-bm_se_all$Method = row.names(bm_se_all)
+bm_se_all <- data.frame(cbind(dCov = bm_booted_dCov$se, dBeforeAfter = bm_booted_dBeforeAfter$se, dMatrix = bm_booted_dMatrix$se, dReg = bm_booted_dReg$se), stringsAsFactors = FALSE)
 
 
 # melt the results based on the method used to compute the estimates
 library(reshape2)
-melt_bm <- melt(bm_all, id = "Method")
-melt_bm_se <- melt(bm_se_all, id = )
+melt_bm <- melt(t(bm_all), id = names(bm_all))
+melt_bm_se <- melt(t(bm_se_all), id = names(bm_se_all))
 
 limits <- aes(ymax = melt_bm$value + melt_bm_se$value, ymin = melt_bm$value - melt_bm_se$value)
 
@@ -112,11 +110,11 @@ limits <- aes(ymax = melt_bm$value + melt_bm_se$value, ymin = melt_bm$value - me
 ```{r, fig.width=11, fig.height=8}
 # plot the data
 # see docs.ggplot2.org/current/geom_point.html
-ggplot(melt_bm, aes(Method, value, fill = Method)) + 
-  geom_point(aes(colour = factor(Method))) + 
+ggplot(melt_bm, aes(Var1, value, fill = Var1)) + 
+  geom_point(aes(colour = factor(Var1))) + 
   geom_errorbar(limits, width = 0.2) +
   # once I have the se's try:   geom_point(aes(colour = factor(Method), size = se)) + 
-  facet_wrap(~variable) + 
+  facet_wrap(~Var2) + 
   geom_abline(intercept = 0, slope = 0, colour = "gray") +
   labs(title = "Selection differentials for male Bumpus data") + 
   theme_bw() +
@@ -128,14 +126,12 @@ ggplot(melt_bm, aes(Method, value, fill = Method)) +
     axis.line = element_line(colour = "black")
     )
 
-# the function can also be run without normalizing the phenotypic traits by setting normalize = FALSE
-differentials(w, z, "all", normalize = FALSE)
 ```
 First, scaling the data to a mean of zero and unit variance makes a big difference. When reporting selection coefficients, it is recommended to report the *standardized* selection coefficients so that they are more comparable across studies. 
 
 Robertson (1966) and Price (1970, 1972) originally proposed that directional selection on individual phenotypic traits could be estimated by either the covariance or regression of relative fitness on the trait (Lande and Arnold 1983).  
 
-Next, let's focus on dCovScale vs dRegScale. The dCovScale row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by $w = \alpha + z_i$, quadratic selection differents by $w = \alpha + z_i + 0.5z_i^2$, and correlational selection differentials by $w = \alpha + z_i + z_j + z_iz_j$, whereby the z data would be normalized to a mean of zero and unit variance.  
+Next, let's focus on dCov vs dReg. The dCov row provides the same results as the psa::dCov function. dRegScale represents a linear regression with the minimum number of traits for the analysis. Linear selection differentals using dRegScale would be estimated by $w = \alpha + z_i$, quadratic selection differents by $w = \alpha + z_i + 0.5z_i^2$, and correlational selection differentials by $w = \alpha + z_i + z_j + z_iz_j$, whereby the z data would be normalized to a mean of zero and unit variance.  
 Notice that the differentials produced by dCovScale and dRegScale are the same for only linear selection. The regression-based method does not produce similar results to the covariance method once nonlinear selection differentials are estimated. The estimates from using these two methods on the exact same data set can be orders of magnitude different. For instance, "TotalLength_mm x FemurL_mm" has 0.033 vs -0.009 for dCovScale and dRegScale, respectively, which alters the interpretation from an increase in covariance to a decrease in covariance. Moreover, "Weight_g x TibioTarL_mm" has 0.058 vs. 0.132, which is the difference between weak selection and strong selection. Yet, on other ocassions, dRegScale and dCovScale still produce comparable results for nonlinear terms: "Weight_g x SkullW_mm" is estimated to be 0.007 for both methods.
   
 Similar results can be found for other datasets. Here is the humanNeonatal dataset from the gsg package, which has a much larger sample size than the BumpusMales dataset.  

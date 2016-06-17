@@ -133,7 +133,7 @@ dCov <- function(w, z) {
 #' @usage differentials(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, ...)
 #'
 #' @param \code{w} Relative fitness.
-#' @param \code{z} Phenotypic trait(s). Character values are not accepted. If using method 3 and standardize = TRUE, z must be the \emph{raw} data because the "after" group needs to be standardized after it has been subsettted from the dataset.
+#' @param \code{z} Phenotypic trait(s). Character values are not accepted. 
 #' @param \code{method}: method to estimate the selection differential. 1 = covariance of relative fitness to the trait; 2 = differences in mean, variance, and covariance before and after selection; 3 = matrix algebra approach of phenotypic distributions before and after selection; 4 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
 #' @param \code{standardize} Indicate whether phenotypic trait data should be standardized to a mean of zero and unit variance.
 #'
@@ -169,9 +169,9 @@ differentials <- function(w, z, method = c(1,2,3,4, "all"), standardize = TRUE, 
   }
   
   # Standardizing the "after" data separately
-  df_raw <- cbind(w, z)
-  df_raw_after <- subset(df_raw, w > 0, select = c(names(z)))
-  ifelse(isTRUE(standardize) && isScale(z) == FALSE, z_after <- data.frame(scale(df_raw_after), stringsAsFactors = FALSE), z_after <- data.frame(df_raw_after, stringsAsFactors = FALSE))
+  df <- cbind(w, z)
+
+  ifelse(isTRUE(standardize) && isScale(z) == FALSE, z_after <- data.frame(scale(subset(df, w > 0, select = names(z))), stringsAsFactors = FALSE), z_after <- data.frame(subset(df, w > 0, select = names(z)), stringsAsFactors = FALSE))
   
   
   ifelse(isTRUE(standardize) && isScale(z) == FALSE, z <- data.frame(scale(z), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
