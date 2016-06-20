@@ -24,12 +24,11 @@
 #' @name glam
 #' @description \code{glam} is used to fit generalized linear models, specified by error distributions and link functions as denoted by \code{family}, using approaches based on the quantitative framework established by Lande and Arnold (1983). Statistical methods are based on \code{glm} for linear models and \code{glmer} for linear mixed effects models. An option to employ the Janzen and Stern (1998) correction factor for logistic regression models is available via \code{JS = TRUE}. Model formulae are constructed such that regression coefficients and standard errors for quadratic terms do NOT need to be doubled (Stinchcombe et al. 2008)
 #'
-#' @usage glam(w, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL)
+#' @usage glam(w, z, fitType=c("gaussian", "binomial"), prep = TRUE, st= NULL, RE = NULL)
 #'
 #' @param \code{fitness} Fitness measure. Gaussian fitness types should use relative fitness, which is calculated as the absolute fitness for each individual \code{W(z)} divided by the mean absolute fitness \code{W}. Binomial fitness types should use the absolute fitness measures (e.g., 0 = failed, 1 = survived)
 #' @param \code{z} Phenotypic traits.
 #' @param \code{fitType} Type of distribution for the fitness metric. Option to either "gaussian" or "binomial".
-#' @param \code{JS} Janzen and Stern (1998) correction factor for make logistic regression coefficients congruent with linear regression coefficients for estimating multivariate selection. Default is \code{FALSE}. Setting \code{JS = TRUE} applies the Janzen and Stern correction factor to the logistic regression coefficients.
 #' @param \code{prep} Option to scale the phenotypic trait data (\code{z}) to a mean of zero and unit variance in preparation for running regression models. Default is set to \code{TRUE}, with the assumption that \code{z} are the raw data for the morphological traits.
 #' @param \code{st} Option to standardize the regression coefficients by either the mean or the standard deviation of \code{z}.
 #' @param \code{RE} Random effects of the model, if applicable.
@@ -43,11 +42,10 @@
 #' @section Warning: \strong{These analyses are currently only available for longitudinal data}. Selection gradients for cross-sectional data must be evalated using matrix algebra rather than OLS regressions (Lande and Arnold 1983).
 #'
 #'
-#' @references Janzen FJ, Stern HL. 1998. Logistic regression for empirical studies of multivariate selection. \emph{Evolution} 52(6): 1564-1571. \url{http://www.jstor.org/stable/2411330?seq=1#page_scan_tab_contents}
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
 #'
-#' @seealso \code{glamx}, \code{glm}, \code{lm}, \code{summary.glam}, \code{glmer}
+#' @seealso \code{glamx}, \code{glm}, \code{lm}, \code{glmer}
 #' @examples
 #' # use the BumpusMales data set
 #' data(BumpusMales)
@@ -66,12 +64,9 @@
 # Need to add an option where the selection gradients are from a LM and the test statistics are from the Log Reg; instead of fitType, I could do method = c("LA", "JS", "LinLog")
 # Also, consider whether to log-transform data as a default? 
 
-glam <- function(fitness, z, fitType=c("gaussian", "binomial"), JS = FALSE, prep = TRUE, st= NULL, RE = NULL,...) {
+glam <- function(fitness, z, fitType=c("gaussian", "binomial"), prep = TRUE, st= NULL, RE = NULL,...) {
 	if (!is.null(fitness) && any(fitness < 0))
 		stop("negative fitness is not allowed")
-
-	if (fitType=="gaussian" && isTRUE(JS))
-		stop("Janzen and Stern (JS) correction only applicable to binomial response types. Change fitType to binomial")
 
 	if (round(colMeans(z),6)==0 && sapply(z, FUN=function(x) sd(x))==1 && prep==TRUE)
 		warning("z data seem to be standardized to mean of zero and unit variance already. Consider setting 'prep' to FALSE and re-run glam model.")
@@ -602,7 +597,7 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #' gradients(BumpusMales$w, BumpusMales[,3:11], "all")
 #' @export 
 
-gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...) {
+gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, fitness2 = NULL, printmod = FALSE, ...) {
   
   isScale <- function(x) {
     ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
@@ -617,13 +612,12 @@ gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TR
   ifelse(isScale(z) == FALSE, z <- data.frame(scale(z, center = centered, scale = scaled), stringsAsFactors = FALSE), z <- data.frame(z, stringsAsFactors = FALSE))
   
   
-  # nonlinear selection differential
-  # s = 1 x #traits vector, ssT should be 1 row x 1 column (i.e., scalar)
-  gMatrix <- function(w,z) {
-    d <- cbind(w, z)
+  ## Method 1: matrix algebra
+  gMatrix <- function(fitness,z) {
+    d <- cbind(fitness, z)
     
     # linear selection differential
-    s <- t(cov(w,z))
+    s <- t(cov(fitness,z))
     
     # phenotypic variance-covariance matrix
     P <- cov(z)
@@ -632,7 +626,7 @@ gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TR
     beta_matrix <- solve(P) %*% as.vector(s)
     
     ssT <- s %*% t(s)
-    P_star <- cov(scale(subset(d, w > 0, select = c(names(z))))) 
+    P_star <- cov(scale(subset(d, fitness > 0, select = c(names(z))))) 
       C = P_star - P + as.numeric(ssT)
       diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
       fullNames <- c(names(z), names(multiprod(z)))
@@ -650,35 +644,81 @@ gradients <- function(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TR
       return(done)
   }
 
-  
-  # nonlinear selection gradient - OLS regression
-  gReg <- function(w, z) {
-    d <- cbind(w,z)
+  ## Method 2: linear and nonlinear selection gradient - OLS regression
+  gOLS <- function(fitness, z) {
+    d <- cbind(fitness,z)
     
     # linear selection gradient - OLS regression
-    beta_reg <- lm(w ~ ., data = d)
+    beta_reg <- lm(fitness ~ ., data = d)
 
     qq <- list()
     for (i in 1:length(z)) {
       qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
       QT <- paste(unlist(qq), collapse = " + ")
-      NLM <- paste("w ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+      NLM <- paste("fitness ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
     }
     gamma_reg <- lm(as.formula(NLM), data = d)
     done <- list(
       grads = c(beta_reg$coefficients[-1], gamma_reg$coefficients[-c(1:length(d))]),
-      beta = beta_reg,
-      gamma = gamma_reg
+      beta = summary(beta_reg),
+      gamma = summary(gamma_reg)
     )
     return(done)
   }
-
+  
+  ## Method 3: linear and nonlinear selection gradient - logistic regression
+  gLOG <- function(fitness, z) {
+    d <- cbind(fitness,z)
+    
+    # selection gradient - logistic regression
+    beta_log <- glm(fitness ~ ., data = d, family = "binomial")
+    
+    qq <- list()
+    for (i in 1:length(z)) {
+      qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
+      QT <- paste(unlist(qq), collapse = " + ")
+      NLM <- paste("fitness ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+    }
+    gamma_log <- glm(as.formula(NLM), data = d, family = "binomial")
+    done <- list(
+      grads = c(beta_log$coefficients[-1], gamma_log$coefficients[-c(1:length(d))]),
+      beta = summary(beta_log),
+      gamma = summary(gamma_log)
+    )
+    return(done)
+  }
+  
+  ## Method 4: linear and nonlinear selection gradients via OLS, but statistical testing via logistic regression
+  gLinLog <- function(fitness, z, fitness2) {
+    d <- cbind(fitness,z)
+    d2 <- cbind(fitness = fitness2, z)
+    
+    # regression models
+    beta_lin <- lm(fitness ~ ., data = d)
+    beta_log <- glm(fitness ~ ., data = d2, family = "binomial")
+    
+    qq <- list()
+    for (i in 1:length(z)) {
+      qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
+      QT <- paste(unlist(qq), collapse = " + ")
+      NLM <- paste("fitness ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+    }
+    gamma_lin <- lm(as.formula(NLM), data = d) 
+    gamma_log <- glm(as.formula(NLM), data = d2, family = "binomial")
+    done <- list(
+      grads = c(beta_lin$coefficients[-1], gamma_lin$coefficients[-c(1:length(d))]),
+      beta = cbind(Estimate = summary(beta_lin)$coefficients[,1], summary(beta_log)$coefficients[,-1]),
+      gamma = cbind(Estimate = summary(gamma_lin)$coefficients[,1], summary(gamma_log)$coefficients[,-1])
+    )
+    return(done)
+  }
+  
 if (method == 1) {
-  ifelse(printmod == TRUE, output <- gMatrix(w,z), output <- data.frame(t(gMatrix(w,z)$grads), check.names = FALSE, row.names = "gMatrix"))
+  ifelse(printmod == TRUE, output <- gMatrix(fitness,z), output <- data.frame(t(gMatrix(fitness,z)$grads), check.names = FALSE, row.names = "gMatrix"))
 } else if(method == 2) {
-  ifelse(printmod == TRUE, output <- gReg(w,z), output <- data.frame(t(gReg(w,z)$grads), check.names = FALSE, row.names = "gReg"))
+  ifelse(printmod == TRUE, output <- gReg(fitness,z), output <- data.frame(t(gReg(fitness,z)$grads), check.names = FALSE, row.names = "gReg"))
 } else if(method == "all") {
-  ifelse(printmod == TRUE, output <- list(gMatrix = gMatrix(w,z), gReg = gReg(w,z)), output <- data.frame(rbind(gMatrix = gMatrix(w,z)$grads, gReg = gReg(w,z)$grads)))
+  ifelse(printmod == TRUE, output <- list(gMatrix = gMatrix(fitness,z), gReg = gReg(fitness,z)), output <- data.frame(rbind(gMatrix = gMatrix(fitness,z)$grads, gReg = gReg(fitness,z)$grads)))
 }
 return(output)
 
