@@ -575,18 +575,17 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #'
 #' @name gradients
 #'
-#' @usage gradients(w, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...)
+#' @usage gradients(fitness, z, method = c(1,2,3,4, "all"), centered = TRUE, scaled = TRUE, fitness2 = NULL, printmod = FALSE, ...)
 #' @description \code{gradients} estimates the linear and nonlinear selection gradients, based on the Lande and Arnold (1983) paper. 
 #' 
-#' @param \code{w} Relative fitness.
+#' @param \code{w} Relative fitness (optional for method 3)
+#' @param \code{W} Absolute fitness (optional for methods 1 and 2)
 #' @param \code{z} Phenotypic trait(s). Character values are not accepted. Input should be raw/unstandardized/un-normalized data, so the data can be normalized correctly for the P star matrix later.
-#' @param \code{method}: method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; "all" = use all of the methods to produce multiple estimates. 
+#' @param \code{method} Method to estimate the selection differential. 1 = matrix algebra approach of phenotypic distributions before and after selection; 2 = ordinary least-squares regression of relative fitness against the trait; 3 = logistic regression of absolute fitness against the trait; 4 = estimates the selection gradients and standard errors from OLS regression but statistical testing (t-value and p-value) from logistic regression; "all" = use all of the methods to produce multiple estimates. 
 #' @param \code{centered} Indicate whether phenotypic trait data should be centered to a mean of zero
 #' @param \code{scaled} Indicate whether phenotypic trait data should be scaled to unit variance.
-
 #'
-#' @details Method 2 ordinary least-squares (OLS) regressions are used to estimate selection gradients, based on methods outlined by Lande and Arnold (1983). Quadratic terms have already been coded, so that their regression estimates and standard errors do NOT need to be doubled (Stinchcombe et al. 2008). The matrix algebra approach estimates the linear and nonlinear selection coefficients using equations outlined in Lande and Arnold (1983): linear selection differential (s) is based on eqation 4, linear selection gradient (beta) is equation 17, nonlinear selection differential (C) is equation 13b, and nonlinear selection gradient (gamma) is equation 14a.
-#'
+#' @references Calsbeek R, Irschick DJ. 2007. The quick and the dead: correlational selection on morphology, performance, and habitat use in island lizards. \emph{Evolution} 61(11): 2493-2503.\url{http://www.dartmouth.edu/~calsbeeklab/Site/Publications_files/Quick_dead.pdf}
 #' @references Lande R, Arnold SJ. 1983. The measurement of selection on correlated characters. \emph{Evolution} 37(6): 1210-1226. \url{http://www.jstor.org/stable/2408842}
 #' @references Stinchcombe JR, Agrawal AF, Hohenlohe PA, Arnold SJ, Blows MW. 2008. Estimating nonlinear selection gradients using quadratic regression coefficients: double or nothing? \emph{Evolution} 62(9): 2435-2440. \url{http://onlinelibrary.wiley.com/doi/10.1111/j.1558-5646.2008.00449.x/abstract}
 #' 
@@ -594,10 +593,10 @@ summary.glam <- function (object, JS = FALSE, dispersion = NULL, correlation = F
 #' @examples
 #' 
 #' data(BumpusMales)
-#' gradients(BumpusMales$w, BumpusMales[,3:11], "all")
+#' gradients(BumpusMales$w, BumpusMales$W, BumpusMales[,3:11], "all")
 #' @export 
 
-gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scaled = TRUE, fitness2 = NULL, printmod = FALSE, ...) {
+gradients <- function(w, W = NULL, z, method = c(1,2,3,4, "all"), centered = TRUE, scaled = TRUE, printmod = FALSE, ...) {
   
   isScale <- function(x) {
     ifelse(class(x) == "data.frame", x <- x, x <- data.frame(x, stringsAsFactors = FALSE))
@@ -613,11 +612,11 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
   
   
   ## Method 1: matrix algebra
-  gMatrix <- function(fitness,z) {
-    d <- cbind(fitness, z)
+  gMatrix <- function(w,z) {
+    d <- cbind(w, z)
     
     # linear selection differential
-    s <- t(cov(fitness,z))
+    s <- t(cov(w,z))
     
     # phenotypic variance-covariance matrix
     P <- cov(z)
@@ -626,7 +625,7 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
     beta_matrix <- solve(P) %*% as.vector(s)
     
     ssT <- s %*% t(s)
-    P_star <- cov(scale(subset(d, fitness > 0, select = c(names(z))))) 
+    P_star <- cov(scale(subset(d, w > 0, select = c(names(z))))) 
       C = P_star - P + as.numeric(ssT)
       diffs <- c(s, diag(C), C[lower.tri(C, diag = FALSE)])
       fullNames <- c(names(z), names(multiprod(z)))
@@ -645,17 +644,17 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
   }
 
   ## Method 2: linear and nonlinear selection gradient - OLS regression
-  gOLS <- function(fitness, z) {
-    d <- cbind(fitness,z)
+  gOLS <- function(w, z) {
+    d <- cbind(w,z)
     
     # linear selection gradient - OLS regression
-    beta_reg <- lm(fitness ~ ., data = d)
+    beta_reg <- lm(w ~ ., data = d)
 
     qq <- list()
     for (i in 1:length(z)) {
       qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
       QT <- paste(unlist(qq), collapse = " + ")
-      NLM <- paste("fitness ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+      NLM <- paste("w ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
     }
     gamma_reg <- lm(as.formula(NLM), data = d)
     done <- list(
@@ -667,17 +666,17 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
   }
   
   ## Method 3: linear and nonlinear selection gradient - logistic regression
-  gLOG <- function(fitness, z) {
-    d <- cbind(fitness,z)
+  gLog <- function(W, z) {
+    d <- cbind(W,z)
     
     # selection gradient - logistic regression
-    beta_log <- glm(fitness ~ ., data = d, family = "binomial")
+    beta_log <- glm(W ~ ., data = d, family = "binomial")
     
     qq <- list()
     for (i in 1:length(z)) {
       qq[i] <- paste("I(0.5*", names(z)[i], "^2)", sep = "")
       QT <- paste(unlist(qq), collapse = " + ")
-      NLM <- paste("fitness ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
+      NLM <- paste("W ~", paste(names(z), collapse = " + "), " + ", QT, "+", ".:.")
     }
     gamma_log <- glm(as.formula(NLM), data = d, family = "binomial")
     done <- list(
@@ -689,9 +688,9 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
   }
   
   ## Method 4: linear and nonlinear selection gradients via OLS, but statistical testing via logistic regression
-  gLinLog <- function(fitness, z, fitness2) {
-    d <- cbind(fitness,z)
-    d2 <- cbind(fitness = fitness2, z)
+  gOLSLog <- function(w, W, z) {
+    d <- cbind(fitness = w, z)
+    d2 <- cbind(fitness = W, z)
     
     # regression models
     beta_lin <- lm(fitness ~ ., data = d)
@@ -707,18 +706,22 @@ gradients <- function(fitness, z, method = c(1,2, "all"), centered = TRUE, scale
     gamma_log <- glm(as.formula(NLM), data = d2, family = "binomial")
     done <- list(
       grads = c(beta_lin$coefficients[-1], gamma_lin$coefficients[-c(1:length(d))]),
-      beta = cbind(Estimate = summary(beta_lin)$coefficients[,1], summary(beta_log)$coefficients[,-1]),
-      gamma = cbind(Estimate = summary(gamma_lin)$coefficients[,1], summary(gamma_log)$coefficients[,-1])
+      beta = cbind(Estimate = summary(beta_lin)$coefficients[,1:2], summary(beta_log)$coefficients[,-c(1,2)]),
+      gamma = cbind(Estimate = summary(gamma_lin)$coefficients[,1:2], summary(gamma_log)$coefficients[,-c(1,2)])
     )
     return(done)
   }
   
 if (method == 1) {
-  ifelse(printmod == TRUE, output <- gMatrix(fitness,z), output <- data.frame(t(gMatrix(fitness,z)$grads), check.names = FALSE, row.names = "gMatrix"))
+  ifelse(printmod == TRUE, output <- gMatrix(w,z), output <- data.frame(t(gMatrix(w,z)$grads), check.names = FALSE, row.names = "gMatrix"))
 } else if(method == 2) {
-  ifelse(printmod == TRUE, output <- gReg(fitness,z), output <- data.frame(t(gReg(fitness,z)$grads), check.names = FALSE, row.names = "gReg"))
+  ifelse(printmod == TRUE, output <- gOLS(w,z), output <- data.frame(t(gOLS(w,z)$grads), check.names = FALSE, row.names = "gOLS"))
+} else if(method == 3) {
+  ifelse(printmod == TRUE, output <- gLog(W,z), output <- data.frame(t(gLog(W,z)$grads), check.names = FALSE, row.names = "gLog"))
+} else if(method == 4) {
+  ifelse(printmod == TRUE, output <- gOLSLog(w, W, z), output <- data.frame(t(gOLSLog(w, W, z)$grads), check.names = FALSE, row.names = "gOLSLog"))
 } else if(method == "all") {
-  ifelse(printmod == TRUE, output <- list(gMatrix = gMatrix(fitness,z), gReg = gReg(fitness,z)), output <- data.frame(rbind(gMatrix = gMatrix(fitness,z)$grads, gReg = gReg(fitness,z)$grads)))
+  ifelse(printmod == TRUE, output <- list(gMatrix = gMatrix(w,z), gOLS = gOLS(w,z), gLog = gLog(W, z), gOLSLog = gOLSLog(w, W, z)), output <- data.frame(rbind(gMatrix = gMatrix(w,z)$grads, gOLS = gOLS(w,z)$grads, gLog = gLog(W,z)$grads, gOLSLog = gOLSLog(w, W, z)$grads)))
 }
 return(output)
 
