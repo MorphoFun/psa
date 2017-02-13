@@ -2,7 +2,7 @@ Package: psa
 Type: Package
 Title: Phenotypic Selection Analysis tools
 Version: 0.0.0.9000
-Date: 2016-04-16
+Date: 2017-13-02
 Authors@R: person("Sandy", "Kawano", email = "sandy.kawano@gmail.com", role = c("aut", "cre"))
 Maintainer: Sandy Kawano <sandy.kawano@gmail.com>
 Imports:
