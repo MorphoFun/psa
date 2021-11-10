@@ -30,8 +30,9 @@
 #' @param \code{z} Phenotypic traits.
 #' @param \code{fitType} Type of distribution for the fitness metric. Option to either "gaussian" or "binomial".
 #' @param \code{prep} Option to scale the phenotypic trait data (\code{z}) to a mean of zero and unit variance in preparation for running regression models. Default is set to \code{TRUE}, with the assumption that \code{z} are the raw data for the morphological traits.
-#' @param \code{st} Option to standardize the regression coefficients by either the mean or the standard deviation of \code{z}.
+#' @param \code{st} Option to standardize the regression coefficients by either the mean ("mean") or the standard deviation ("var") of \code{z}.
 #' @param \code{RE} Random effects of the model, if applicable.
+#' @param \code{JS} Janzen and Stern correction, if applicable
 #'
 #' @details The Lande-Arnold Method is based on the 1983 paper by Russell Lande and Stevan Arnold, entitled "The measurement of selection on correlated characters". Their method involves applying ordinary least-squares (OLS) regression to estimate selection gradients. 
 #'
@@ -64,7 +65,7 @@
 # Need to add an option where the selection gradients are from a LM and the test statistics are from the Log Reg; instead of fitType, I could do method = c("LA", "JS", "LinLog")
 # Also, consider whether to log-transform data as a default? 
 
-glam <- function(fitness, z, fitType=c("gaussian", "binomial"), prep = TRUE, st= NULL, RE = NULL,...) {
+glam <- function(fitness, z, fitType=c("gaussian", "binomial"), prep = TRUE, st= NULL, RE = NULL, JS = NULL, ...) {
 	if (!is.null(fitness) && any(fitness < 0))
 		stop("negative fitness is not allowed")
 
